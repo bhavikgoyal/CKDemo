@@ -1,0 +1,167 @@
+@model ChossonKallahAdmin.EF6.WebsiteBanner
+@using System.Web.Configuration
+@{
+    ViewBag.PageHead = "Edit Home Page Banner";
+    Layout = "~/Areas/Xpanel/Views/Shared/HomeLayout.cshtml";
+}
+<script>
+
+    $(document).ready(function () {
+        $('div.header-nav').css('display', 'none');
+        if ('@Model.BannerImage'!= "")
+            $("#imgBannerImage").attr('src', "@WebConfigurationManager.AppSettings["BusinessBannerURL"]" + '@Model.BannerImage');
+        //else
+        //    $("#BannerView").hide();
+    });
+
+</script>
+@using (Html.BeginForm("Edit", "WebsiteBanner", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="alert alert-success" id="success" style="margin-top:20px;display:none">
+        <strong>Success!</strong> <span class="successmessage"></span>
+    </div>
+    <div class="alert alert-danger" id="error" style="margin-top:20px;display:none">
+        <strong>Error!</strong> <span class="errormessage"></span>
+    </div>
+    <br />
+    <div class="panel panel-default">
+        <div class="panel-heading">Edit Home Page Banner</div>
+        <div class="panel-body">
+            <div class="row clearfix">
+                <div class="form-group">
+                    @Html.HiddenFor(model => model.WebsiteBannerID)
+                    @Html.HiddenFor(model => model.CreatedOn)
+                    @Html.HiddenFor(model => model.DeletedOn)
+                    @Html.HiddenFor(model => model.IsDeleted)
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Banner Name&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.BannerName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.BannerName, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Banner Image</label>
+                        @Html.TextBoxFor(model => model.BannerImage, new { @class = "form-control", @type = "file", @onchange = "fileCheck(this);" })
+                        @Html.ValidationMessageFor(model => model.BannerImage, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <img id="imgBannerImage" height="80px;" />
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Text Line 1&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.BannerTextLine1, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.BannerTextLine1, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Text Line 2&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.BannerTextLine2, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.BannerTextLine2, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Sequence</label>
+                        @Html.TextBoxFor(model => model.Sequence, new { @class = "form-control", @onchange = "return GetMaxNumer()", @onkeypress = "return onlyNumber(event)" })
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Is Active</label>
+                        @Html.EditorFor(model => model.IsActive, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="clearfix">
+
+                </div>
+
+                <div class="form-group col-md-12">
+                    <input type="submit" onclick="return chckvalidation()" class="btn  btn-primary pull-left" style="margin-right:12px;" value="Update" />
+                    @Html.ActionLink("Cancel", "Index", null, new { @class = "btn  btn-primary pull-left", @style = "margin-right:12px;" })
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<script>
+    function fileCheck(obj) {
+        var fileExtension = ['jpeg', 'jpg', 'png', 'gif', 'bmp'];
+        if ($.inArray($(obj).val().split('.').pop().toLowerCase(), fileExtension) == -1) {
+            alert("Only '.jpeg','.jpg', '.png', '.gif', '.bmp' formats are allowed.");
+            $(obj).val(null);
+        }
+    }
+    function onlyNumber(e) {
+        if (e.charCode == 48) {
+            $('.errormessage').html('<br/> - 0 must not be allow in Sequence.');
+            errormessage = $('.errormessage').html();
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            $('#error').show();
+        }
+        else {
+            return (e.charCode > 47 && e.charCode < 58);
+        }
+    }
+    function GetMaxNumer() {
+        var lastrecod = '@Model.Sequence';
+        var latestval = $('#Sequence').val();
+        if ( latestval > lastrecod )
+            $('#Sequence').val(lastrecod);
+    }
+    function chckvalidation() {
+        $('#error1').hide();
+        debugger;
+        var IsError = true;
+        var errormessage = "";
+        $('.errormessage').html(errormessage);
+
+        if ($('#Bannername').val() == "") {
+            $('.errormessage').html(errormessage + '<br/> - Banner name is required.');
+            errormessage = $('.errormessage').html();
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            IsError = false;
+            $('#error').show();
+        }
+
+        if ($('#Bannertextline1').val() == "") {
+            $('.errormessage').html(errormessage + "<br/> - Banner text line 1 is required.");
+            errormessage = $('.errormessage').html();
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            IsError = false;
+            $('#error').show();
+        }
+        if ($('#Bannertextline2').val() == "") {
+            $('.errormessage').html(errormessage + "<br/> - Banner text line 2 is required.");
+            errormessage = $('.errormessage').html();
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            IsError = false;
+            $('#error').show();
+        }
+        if ($('#Sequence').val() == "") {
+            $('.errormessage').html(errormessage + "<br/> - Sequence is required.");
+            errormessage = $('.errormessage').html();
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            IsError = false;
+            $('#error').show();
+        }
+        else {
+            var seq = parseInt($('#Sequence').val());
+            if (seq == 0) {
+                $('.errormessage').html(errormessage + "<br/> - 0 must not be allow in Sequence.");
+                errormessage = $('.errormessage').html();
+                $("html, body").animate({ scrollTop: 0 }, "slow");
+                IsError = false;
+                $('#error').show();
+            }
+        }
+        return IsError;
+    }
+</script>

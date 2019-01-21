@@ -1,0 +1,67 @@
+ @model ChossonKallah.Models.GeneralSettingsClass 
+ 
+  
+ 
+ 
+ 
+  
+
+
+
+ @{ 
+			 ViewBag.Title = ""; 
+ 			  Layout =  "~/Views/Shared/_MasterPage.cshtml"; 
+  } 
+	 <script src="~/Scripts/jquery1.8.3.min.js"></script>
+	 <script src="~/Scripts/jquery-1.js"></script>
+	 <script>
+		 
+			 $(document).ready(function(){
+				 $('div.header-nav').css('display','none');
+			 });
+		 
+	 </script>
+@{
+		
+		 <div class="box-header" data-original-title>
+			 <h2><i class="halflings-icon white user"></i><span class="break"></span>View Record</h2>
+			 <div class="box-icon">
+			 </div>
+		 </div>
+		 <div class="box-content">
+		  
+		 <div class="editor-field">
+			 @Html.HiddenFor(model => model.Generalsettings)
+		 </div>
+		 <div class="editor-label" style="font-weight:bold;" >
+			 @Html.DisplayNameFor(model => model.Key)
+		 </div>
+		 <div class="editor-field">
+			 @Html.DisplayFor(model => model.Key)
+		 </div>
+		 <div class="editor-label" style="font-weight:bold;" >
+			 @Html.DisplayNameFor(model => model.Descrpition)
+		 </div>
+		 <div class="editor-field">
+			 @Html.DisplayFor(model => model.Descrpition)
+		 </div>
+		 
+		 
+		 <div>@Html.ActionLink("Back to List", "Index",null,new{@class="btn"})</div>
+		 
+		 </div> 
+}
+
+  
+ 
+
+ <style> body{ 
+ background-color: #EDEDED; 
+} 
+ .fls{ 
+ padding:5px 20px; 
+} 
+ .dfv{ 
+ padding:5px 20px; 
+} 
+ </style>

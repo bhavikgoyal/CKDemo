@@ -1,0 +1,248 @@
+﻿@using System.Web.Configuration
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/HomeLayout.cshtml";
+}
+<style>
+    .cap_tion {
+        position: absolute;
+        left: 10%;
+        bottom: 5%;
+        color: #fff;
+        font-style: italic;
+    }
+
+        .cap_tion h1 {
+            font-size: 30px;
+            letter-spacing: 2px;
+        }
+
+        .cap_tion h5 {
+            font-size: 16px;
+            letter-spacing: 2px;
+        }
+</style>
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    /* The Modal (background) */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 150px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    /* Modal Content */
+    .modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 25px;
+        border: 1px solid #888;
+        width: 50%;
+    }
+
+        .modal-content p {
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .modal-content ul {
+            font-weight: bold;
+            list-style-type: none;
+        }
+
+    /* The Close Button */
+    .close {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+</style>
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>Select your location</p>
+        <ul id="uldata">
+            <li class="locations">
+                <a class="locationUrl">
+                    <span class="locationName"></span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class='row main' id="homepage">
+    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+        <!-- Indicators -->
+        <ol id="dotid" class="carousel-indicators">
+            @*<li data-target="#myCarousel" data-slide-to="1" class="active"></li>*@
+        </ol>
+        <div id="image" class="carousel-inner">
+
+        </div>
+        <div class="itemsimg" style="display:none">
+            <img id="websitebanner" style="width:100%" />
+            <div class="cap_tion">
+                <h1 id="textbanner1">PLAN YOUR SPECIAL DAY</h1>
+                <h5 id="textbanner2">Great ideas meant to inspire.....</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class='wrap'>
+        <div class='col-12'>
+            <h2>Start planning <span>your</span> wedding!</h2>
+        </div>
+        <div class='col-sm-6 col-xs-12'>
+
+            <img src="~/Content/img/location.png" class='homepage-icon' />
+            <h3>Select Location</h3>
+            <ul>
+                <li><a id="myBtn" herf=''>Find wedding vendors near you</a></li>
+            </ul>
+        </div>
+        <div class='col-sm-6 col-xs-12'>
+            <img src="~/Content/img/inspired.png" class='homepage-icon' />
+            <h3>Get inspired</h3>
+            <ul>
+                <li><a herf=''>Gallery</a></li>
+                <li><a herf=''>Real wedding</a></li>
+            </ul>
+        </div>
+        <div class='col-sm-6 col-xs-12'>
+            <img src="~/Content/img/articles.png" class='homepage-icon' />
+            <h3>Articles & info</h3>
+            <ul>
+                <li><a herf=''>Wedding advice</a></li>
+                <li><a herf=''>Wedding finds</a></li>
+            </ul>
+        </div>
+        <div class='col-sm-6 col-xs-12'>
+            <img src="~/Content/img/planning.png" class='homepage-icon' />
+            <h3>Planning Tools</h3>
+            <ul>
+                <li><a herf=''>Checklist</a></li>
+                <li><a herf=''>Kibuddim</a></li>
+                <li><a herf=''>Wedding deals</a></li>
+            </ul>
+        </div>
+        <div style="clear:both"></div>
+    </div>
+</div>
+<script>
+
+    var modal = document.getElementById('myModal');
+
+
+    var btn = document.getElementById("myBtn");
+
+
+    var span = document.getElementsByClassName("close")[0];
+
+
+    btn.onclick = function () {
+        GetLocations();
+        modal.style.display = "block";
+    }
+
+
+    span.onclick = function () {
+        modal.style.display = "none";
+    }
+
+
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+    function GetLocations() {
+
+        $.ajax({
+            type: "Get",
+            cache: false,
+            url: "/Home/GetLocations",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                response = JSON.parse(response);
+                var table = $("#uldata li:eq(0)").clone(true);
+                for (var i = 0; i < response.length; i++) {
+                    $(".locationName", table).html(response[i].LocationName);
+                    $(".locationUrl", table).attr('href', '/Home/Index?LocationName=' + response[i].LocationName);
+                    $("#uldata").append(table);
+                }
+                $("#uldata li:eq(0)").hide();
+            },
+            failure: function (response) {
+
+            },
+            error: function (response) {
+            }
+        });
+    }
+
+    function GetBanner() {
+
+        $.ajax({
+            type: "Get",
+            cache: false,
+            url: "/Home/GetBanner",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                debugger;
+                response = JSON.parse(response);
+                for (var i = 0; i < response.length; i++) {
+                    var table = $("div.itemsimg:eq(0)").clone(true);
+                    $(table).show();
+
+                    $(table).addClass('item');
+                    if (i == 0) {
+                        $(table).addClass('active');
+                    }
+                    else {
+                        $(table).removeClass('active');
+                    }
+                    if (response[i].Sequence == 1) {
+                        $("#dotid").append("<li data-target='#myCarousel' data-slide-to='" + response[i].Sequence + "' class='active'></li>");
+                    }
+                    else {
+                        $("#dotid").append("<li data-target='#myCarousel' data-slide-to='" + response[i].Sequence+ "'></li>");
+                    }
+                    $("#websitebanner", table).attr('src', "@WebConfigurationManager.AppSettings["BusinessBannerURL"]" + response[i].BannerImage);
+                    $("#textbanner1", table).html(response[i].BannerTextLine1)
+                    $("#textbanner2", table).html(response[i].BannerTextLine2)
+                    $("#image").append(table);
+                }
+                //$(".item:eq(0)").hide();
+            },
+            failure: function (response) {
+
+            },
+            error: function (response) {
+            }
+        });
+    }
+    $(document).ready(function () {
+        GetBanner();
+    });
+</script>

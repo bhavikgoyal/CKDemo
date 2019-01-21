@@ -1,0 +1,251 @@
+@model IEnumerable<ChossonKallahAdmin.EF6.BusinessReview>
+@{
+    ViewBag.PageHead = "Reviews";
+    Layout = "~/Views/Shared/HomeLayout.cshtml";
+    string BusinessReviewSuccess = Convert.ToString(TempData["BusinessReviewSuccess"]);
+}
+<script>
+    $(document).ready(function () {
+        var Businessid = 0;
+        if (window.location.href.indexOf('Businessid') >= 0) {
+            var splitdata = window.location.href.split('=');
+            Businessid = splitdata[1];
+        }
+        $('#hdnBusineesId').val(Businessid);
+        $('#NewIndex').val(1);
+        $('#searchbox').val('');
+        bindPagingData();
+        $('#btnadd').on('click', function () {
+            window.location.href = '/BusinessReview/Create?Businessid=' + Businessid;
+        });
+        $(window).on('mousewheel DOMMouseScroll', function (e) {
+            var scroll = $(window).scrollTop();
+            var direction = (function () {
+                var delta = (e.type === 'DOMMouseScroll' ? e.originalEvent.detail * -40 : e.originalEvent.wheelDelta);
+                return delta > 0 ? 0 : 1;
+            }());
+            if (direction === 1) {
+                var maxVal = parseInt((parseInt($(document).height()) * 95) / 100);
+                var lowVal = $(window).scrollTop() + $(window).height();
+                if (lowVal >= maxVal) {
+                    if ($("#NewIndex").val() != "1") {
+                        $("#ddlload").hide();
+                        GetRecords();
+                    }
+                }
+            }
+        });
+
+    });
+
+    function bindPagingDataSearch() {
+        $('#NewIndex').val(1);
+        return bindPagingData();
+    }
+
+    function bindPagingData() {
+
+        $.ajax({
+            type: "Get",
+            cache: false,
+            url: "/BusinessReview/Indexpaging",
+            data: { 'PageIndex': $('#NewIndex').val(), 'PageSize': $('#Pagesize').val(), 'Search': $('#searchbox').val(), 'Businessid': $('#hdnBusineesId').val() },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                if (response.indexOf('Exception') >= 0) {
+                    $('.alert-danger').show();
+                    $('.errormessage').html(response);
+                }
+                else {
+                    response = JSON.parse(response);
+                    var curRecords = 0;
+                    var TotalRecs = 0;
+                    if (parseInt(response.length) > 0) {
+                        curRecords = parseInt(($('#NewIndex').val()) * parseInt($('#Pagesize').val()));
+                        curRecords = curRecords - ($('#Pagesize').val() - parseInt(response.length));
+                        TotalRecs = parseInt(response[0].TotalRecord);
+                        $('.spnOfRecs').text(curRecords);
+                        $('.spnTotalRecs').text(TotalRecs);
+                    }
+                    if (parseInt(response.length) > 0) {
+                        if (parseInt(($('#NewIndex').val()) * parseInt($('#Pagesize').val())) >= parseInt(response[0].TotalRecord)) {
+                            $("#ddlload").hide();
+                        } else {
+                            $("#ddlload").show();
+                        }
+                    } else {
+                        $("#ddlload").hide();
+                    }
+                    if ($('#NewIndex').val() < 2) {
+                        $("#RawDatas table tbody tr:not(:first)").remove();
+                    }
+                    $("#RawDatas table tbody tr:eq(0)").show();
+                    for (var i = 0; i < response.length; i++) {
+                        var table = $("#RawDatas table tbody tr:eq(0)").clone(true);
+                        $(".businessreviewid", table).html(response[i].BusinessReviewID);
+                        $(".businessname", table).html(response[i].businessname);
+                        $(".name", table).html(response[i].Name);
+                        $(".email", table).html(response[i].Email);
+                        $(".rating", table).html(response[i].Rating);
+                        $(".review", table).html(response[i].Review);
+
+                        $(".addedon", table).html(response[i].AddedOn);
+                        $(".addedbyip", table).html(response[i].AddedByIP);
+                        $("#EditData", table).attr('href', '/BusinessReview/Edit?Businessreviewid=' + response[i].BusinessReviewID);
+                        $('#DeleteData', table).attr('href', '/BusinessReview/Delete?Businessreviewid=' + response[i].BusinessReviewID);
+                        //$('.review', table).attr('href', '/BusinessReview/Index?Businessid=' + response[i].businessid);
+                        if (response[i].IsActive) {
+                            $('#activetrue', table).show();
+                            $('#activefalse', table).hide();
+                        }
+                        else {
+                            $('#activetrue', table).hide();
+                            $('#activefalse', table).show();
+                        }
+                        $("#RawDatas table").append(table);
+                    }
+                    $("#RawDatas table tbody tr:eq(0)").hide();
+                    $('#success').hide();
+                    $('#error').hide();
+                }
+            },
+            failure: function (response) {
+
+            },
+            error: function (response) {
+            }
+        });
+        return false;
+    }
+
+    function Getdatas() {
+        GetRecords();
+    }
+
+    function GetRecords() {
+        var CountVal = (parseInt($('#NewIndex').val()) + 1);
+        $('#NewIndex').val(CountVal);
+        bindPagingData();
+    }
+
+</script>
+@{
+    if (!string.IsNullOrEmpty(BusinessReviewSuccess))
+    {
+        <div class="alert alert-success" style="margin-top:20px">
+            <strong>Success!</strong> <span class="successmessage">@BusinessReviewSuccess</span>
+        </div>
+    }
+        <div class="alert alert-danger" style="margin-top:20px;display:none">
+            <strong>Error!</strong> <span class="errormessage"></span>
+        </div>
+    <br />
+
+    <input type="hidden" id="hdnBusineesId" value="0" />
+
+    <div class="box-content">
+        <div>
+            <div class="panel panel-default">
+                <div class="panel-heading">Reviews for @Convert.ToString(ViewBag.ListingName)  </div>
+                <div class="panel-body">
+                    <div class="row clearfix">
+                        <form>
+                            <div class="form-group clearfix input-group col-lg-3 col-md-5 col-sm-7 pull-left p_l_15 p_r_15">
+                                <input type="text" id="searchbox" class="form-control" placeholder="Search" />
+                                <span class="input-group-btn">
+                                    <input type="submit" onclick="return bindPagingDataSearch()" value="Search" class="btn btn-primary" />
+                                </span>
+                            </div>
+                        </form>
+                        <div class="form-group clearfix col-lg-9 col-md-7 col-sm-5 ">
+                            <button type="button" id="btnadd" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Add</button>
+                        </div>
+                    </div>
+                    <div class="row clearfix p_l_15 p_r_15">
+                        <div class="pull-right">
+                            <label> <span class="spnOfRecs">0</span> out of <span class="spnTotalRecs">0</span>&nbsp; Records </label>
+                        </div>
+                        <div class="form-group  table-responsive" id="RawDatas">
+                            <table id="myTable" class="table table-striped table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        @*<th style="text-align:center;">
+                                                Listing Name
+                                            </th>*@
+                                        <th style="text-align:center;">
+                                            Review Name
+                                        </th>
+                                        <th style="text-align:center;">
+                                            Email
+                                        </th>
+                                        <th style="text-align:center;">
+                                            Review
+                                        </th>
+                                        <th style="text-align:center;">
+                                            Rating
+                                        </th>
+                                        <th style="width:35px;text-align:center;">IP</th>
+                                        <th style="width:35px;text-align:center;">Added On</th>
+                                        <th style="width:35px;text-align:center;">Status</th>
+                                        <th style="width:35px;text-align:center;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        @*<td style="display:none">
+                                                <span class="businessreviewid"></span>
+                                            </td>*@
+                                        @*<td style="text-align:center;">
+                                                <span class="businessname"></span>
+                                            </td>*@
+                                        <td style="text-align:center;">
+                                            <span class="businessreviewid" style="display:none;"></span>
+                                            <span class="name"></span>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <span class="email"></span>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <span class="review"></span>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <span class="rating"></span>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <span class="addedbyip"></span>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <span class="addedon"></span>
+                                        </td>
+                                        <td style="text-align:center">
+                                            <img src="~/Content/Images/icon_active.png" id="activetrue" style="max-width:none" />
+                                            <img src="~/Content/Images/icon_inactive.png" id="activefalse" style="max-width:none" />
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <a title="Edit" margin:2px;" id="EditData">
+                                                <img src="~/Content/Images/pencil.png" style="max-width:none;cursor:pointer;" />
+                                            </a>
+                                            <a title="Delete" id="DeleteData" onclick="return confirm('Are you sure you want to delete this record ?'); ">
+                                                <img src="~/Content/Images/cross.png" style="max-width:none;cursor:pointer;" />
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="pull-right" style="margin-top:5px">
+                            <label> <span class="spnOfRecs">0</span> out of <span class="spnTotalRecs">0</span>&nbsp; Records </label>
+
+                        </div>
+                        <div style="text-align:center;margin-top:5px" id="ddlload">
+                            <a class="btn btn-primary" style="cursor:pointer" id="loaddata" onclick="Getdatas();">Load more</a>
+                        </div>
+                        <input type="hidden" id="NewIndex" value="1" />
+                        <input type="hidden" id="Pagesize" value="10" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

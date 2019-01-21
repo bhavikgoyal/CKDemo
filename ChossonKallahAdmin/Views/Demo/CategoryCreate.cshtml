@@ -1,0 +1,56 @@
+﻿
+@{
+    ViewBag.Title = "LocationCreate";
+    Layout = "~/Views/Shared/DemoHomeLayout.cshtml";
+}
+@model ChossonKallah.Models.CategoriesClass
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        <div class="alert alert-success" style="margin-top:20px;display:none">
+            <strong>Success!</strong> <span></span>
+        </div>
+        <div class="alert alert-danger" style="margin-top:20px;display:none">
+            <strong>Error!</strong> <span></span>
+        </div>
+        <br />
+        <div class="panel panel-default">
+            <div class="panel-heading">Add New Category</div>
+            <div class="panel-body">
+                <div class="row clearfix">
+                    <div class="clearfix">
+                        <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                            <label class="control-label">Name&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                            @Html.TextBoxFor(model => model.Categoryname, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Categoryname)
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                            <label class="control-label">Email&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                            @Html.TextBoxFor(model => model.Categoryurl, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Categoryurl)
+                        </div>
+                    </div>
+                    <div class="clearfix">
+                        <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                            <label class="control-label">Status</label>
+                            @Html.EditorFor(model => model.Isactive, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Isactive)
+                        </div>
+                    </div>
+                    <div class="form-group col-md-12">
+                        <input type="submit" class="btn  btn-primary pull-left" style="margin-right:12px;" value="Save" />
+                        @Html.ActionLink("Cancel", "CategoryIndex", null, new { @class = "btn  btn-primary pull-left", @style = "margin-right:12px;" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
+
+
+
+
+

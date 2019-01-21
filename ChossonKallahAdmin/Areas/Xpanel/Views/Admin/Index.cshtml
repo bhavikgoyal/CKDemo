@@ -1,0 +1,222 @@
+@model IEnumerable<ChossonKallahAdmin.EF6.Admin>
+@{
+    /**/
+
+    ViewBag.PageHead = "Admin";
+    Layout = "~/Areas/Xpanel/Views/Shared/HomeLayout.cshtml";
+
+    string AdminSuccess = Convert.ToString(TempData["AdminSuccess"]);
+    string AdminError = Convert.ToString(TempData["AdminError"]);
+
+}
+<script>
+    $(document).ready(function () {
+        $('#NewIndex').val(1);
+        $('#searchbox').val('');
+        bindPagingData();
+        $('#btnadd').on('click', function () {
+            window.location.href = '/Xpanel/Admin/Create';
+        });
+        $(window).on('mousewheel DOMMouseScroll', function (e) {
+            var scroll = $(window).scrollTop();
+            var direction = (function () {
+                var delta = (e.type === 'DOMMouseScroll' ? e.originalEvent.detail * -40 : e.originalEvent.wheelDelta);
+                return delta > 0 ? 0 : 1;
+            }());
+            if (direction === 1) {
+                var maxVal = parseInt((parseInt($(document).height()) * 95) / 100);
+                var lowVal = $(window).scrollTop() + $(window).height();
+                if (lowVal >= maxVal) {
+                    if ($("#NewIndex").val() != "1") {
+                        $("#ddlload").hide();
+                        GetRecords();
+                    }
+                }
+            }
+        });
+    });
+
+    function bindPagingDataSearch() {
+        $('#NewIndex').val(1);
+        return bindPagingData();
+    }
+
+    function bindPagingData() {
+
+        $.ajax({
+            type: "Get",
+            cache: false,
+            url: "/Xpanel/Admin/Indexpaging",
+            data: { 'PageIndex': $('#NewIndex').val(), 'PageSize': $('#Pagesize').val(), 'Search': $('#searchbox').val() },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                if (response.indexOf('Exception') >= 0) {
+                    $('.alert-danger').show();
+                    $('.errormessage').html(response);
+                }
+                else {
+
+                    response = JSON.parse(response);
+                    var curRecords = 0;
+                    var TotalRecs = 0;
+                    if (parseInt(response.length) > 0) {
+                        curRecords = parseInt(($('#NewIndex').val()) * parseInt($('#Pagesize').val()));
+                        curRecords = curRecords - ($('#Pagesize').val() - parseInt(response.length));
+                        TotalRecs = parseInt(response[0].TotalRecord);
+                        $('.spnOfRecs').text(curRecords);
+                        $('.spnTotalRecs').text(TotalRecs);
+                    }
+                    if (parseInt(response.length) > 0) {
+                        if (parseInt(($('#NewIndex').val()) * parseInt($('#Pagesize').val())) >= parseInt(response[0].TotalRecord)) {
+                            $("#ddlload").hide();
+                        } else {
+                            $("#ddlload").show();
+                        }
+                    } else {
+                        $("#ddlload").hide();
+                    }
+                    if ($('#NewIndex').val() < 2) {
+                        $("#RawDatas table tbody tr:not(:first)").remove();
+                    }
+                    $("#RawDatas table tbody tr:eq(0)").show();
+                    for (var i = 0; i < response.length; i++) {
+                        var table = $("#RawDatas table tbody tr:eq(0)").clone(true);
+                        $(".AdminEmail", table).html(response[i].Email);
+                        $(".AdminUsername", table).html(response[i].Username);
+
+                        $(".AdminName", table).html(response[i].Name);
+                        $("#EditData", table).attr('href', '/Xpanel/Admin/Edit?Adminid=' + response[i].AdminId);
+                        $('#DeleteData', table).attr('href', '/Xpanel/Admin/Delete?Adminid=' + response[i].AdminId);
+                        if (response[i].IsActive) {
+                            $('#activetrue', table).show();
+                            $('#activefalse', table).hide();
+                        }
+                        else {
+                            $('#activetrue', table).hide();
+                            $('#activefalse', table).show();
+                        }
+                        $("#RawDatas table").append(table);
+                    }
+                    $("#RawDatas table tbody tr:eq(0)").hide();
+                    $('#success').hide();
+                    $('#error').hide();
+                }
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+            }
+        });
+        return false;
+    }
+
+    function Getdatas() {
+        GetRecords();
+    }
+
+    function GetRecords() {
+        var CountVal = (parseInt($('#NewIndex').val()) + 1);
+        $('#NewIndex').val(CountVal);
+        bindPagingData();
+    }
+
+</script>
+
+
+
+@{
+    //Message Display
+    if (!string.IsNullOrEmpty(AdminSuccess))
+    {
+        <div class="alert alert-success" style="margin-top:20px">
+            <strong>Success!</strong> <span class="successmessage">@AdminSuccess</span>
+        </div>
+    }
+    if (!string.IsNullOrEmpty(AdminError))
+    {
+        <div class="alert alert-danger" style="margin-top:20px">
+            <strong>Error!</strong> <span class="successmessage">@AdminError</span>
+        </div>
+    }
+    <div class="alert alert-danger" style="margin-top:20px;display:none">
+        <strong>Error!</strong> <span class="errormessage"></span>
+    </div>
+    <br />
+    <div class="box-content">
+        <div>
+            <div class="panel panel-default">
+                <div class="panel-heading">Admin</div>
+                <div class="panel-body">
+                    <div class="row clearfix">
+                        <form>
+                            <div class="form-group clearfix input-group col-lg-3 col-md-5 col-sm-7 pull-left p_l_15 p_r_15">
+                                <input type="text" id="searchbox" class="form-control" placeholder="Search" />
+                                <span class="input-group-btn">
+                                    <input type="submit" value="Search" onclick="return bindPagingDataSearch();" class="btn btn-primary" />
+                                </span>
+                            </div>
+                        </form>
+                        <div class="form-group clearfix col-lg-9 col-md-7 col-sm-5 ">
+                            <button type="button" id="btnadd" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Add</button>
+                        </div>
+                    </div>
+                    <div class="row clearfix p_l_15 p_r_15">
+                        <div class="form-group  table-responsive" id="RawDatas">
+                            <div class="pull-right">
+                                <label> <span class="spnOfRecs">0</span> out of <span class="spnTotalRecs">0</span>&nbsp; Records </label>
+                            </div>
+                            <table id="myTable" class="table table-striped table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:center;">
+                                            @Html.DisplayNameFor(model => model.Name)
+                                        </th>
+                                        <th style="text-align:center;">
+                                            @Html.DisplayNameFor(model => model.Username)
+                                        </th>
+                                        <th style="text-align:center;"> @Html.DisplayNameFor(model => model.Email)</th>
+                                        <th style="width:35px;text-align:center;">Status</th>
+                                        <th style="width:100px;text-align:center;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="display:none">
+                                            <span class="AdminId"></span>
+                                        </td>
+                                        <td style="text-align:center;"><span class="AdminName"></span> </td>
+                                        <td style="text-align:center;"><span class="AdminUsername"></span>  </td>
+                                        <td style="text-align:center;"><span class="AdminEmail"></span>  </td>
+                                        <td style="text-align:center">
+                                            <img src="~/Content/Images/icon_active.png" id="activetrue" style="max-width:none" />
+                                            <img src="~/Content/Images/icon_inactive.png" id="activefalse" style="max-width:none" />
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <a title="Edit" margin:2px;" id="EditData">
+                                                <img src="~/Content/Images/pencil.png" style="max-width:none;cursor:pointer;" />
+                                            </a>
+                                            <a title="Delete" id="DeleteData" onclick="return confirm('Are you sure you want to delete this record ?'); ">
+                                                <img src="~/Content/Images/cross.png" style="max-width:none;cursor:pointer;" />
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="pull-right" style="margin-top:5px">
+                                <label> <span class="spnOfRecs">0</span> out of <span class="spnTotalRecs">0</span>&nbsp; Records </label>
+
+                            </div>
+                            <div style="text-align:center;margin-top:5px" id="ddlload">
+                                <a class="btn btn-primary" style="cursor:pointer" id="loaddata" onclick="Getdatas();">Load more</a>
+                            </div>
+                            <input type="hidden" id="NewIndex" value="1" />
+                            <input type="hidden" id="Pagesize" value="10" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+

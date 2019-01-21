@@ -1,0 +1,119 @@
+﻿@using ChossonKallahAdmin.GlobalUtilities;
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Chosson Kallah</title>
+    <meta name="description" content="Jewish Wedding Planning and Resources">
+    <link rel="stylesheet" href="~/Content/main.css">
+    @*<link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet'>
+        <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'></script>
+        <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+        <link href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' rel='stylesheet' />*@
+
+    <link href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' rel='stylesheet' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class='row nav'>
+            <ul class='wrap mainmenu'>
+                <li class='col-md-2 col-sm-4 col-xs-12 selected'>
+                    <a href=""><h3>Home</h3></a>
+                </li>
+                <li class='col-md-2 col-sm-4 col-xs-12 mainmenu'>
+                    <h3>Planning</h3>
+                    <ul class="submenu">
+                        <li><a href="">Find Local Vendors</a></li>
+                        <li><a href="">See Vendor Directory</a></li>
+                    </ul>
+                </li>
+                <li class='col-md-2 col-sm-4 col-xs-12 mainmenu'>
+                    <h3>Inspiration</h3>
+                    <ul class="submenu">
+                        <li><a href="">Photo Gallery</a></li>
+                        <li><a href="">Real Wedding Stories</a></li>
+                    </ul>
+                </li>
+                <li class='col-md-2 col-sm-4 col-xs-12 mainmenu'>
+                    <h3>Information</h3>
+                    <ul class="submenu">
+                        <li><a href="">Articles and Advice</a></li>
+                        <li><a href="">Jewish Wedding How To</a></li>
+                    </ul>
+                </li>
+                <li class='col-md-2 col-sm-4 col-xs-12 mainmenu'>
+                    <h3>Tools</h3>
+                    <ul class="submenu">
+                        <li><a href="">Checklist</a></li>
+                        <li><a href="">More...</a></li>
+                    </ul>
+                </li>
+                <li class='col-md-2 col-sm-4 col-xs-12'>
+                    <a href="https://www.facebook.com/chossonkallah/" target="_blank"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+                    <a href=""><i class="fa fa-twitter" aria-hidden="true"></i></a>
+                    <a href=""><i aria-hidden='true' class='fa fa-pinterest'></i></a>
+                    <a href=""><i aria-hidden='true' class='fa fa-google-plus'></i></a>
+                    <a href="https://www.instagram.com/chossonkallah/" target="_blank"><i aria-hidden='true' class='fa fa-instagram'></i></a>
+                </li>
+
+            </ul>
+            <div style="clear:both"></div>
+        </div>
+
+        <div class='row header'>
+            <div class='wrap'>
+                <div id='logo' class='col-sm-9 col-xs-12'>
+                    <span class='blue'>chosson</span>|<span class='pink'>kallah</span>
+                    <div class='subtitle'>Jewish Wedding Planning and Resources</div>
+                </div>
+                <div id='info' class='col-sm-3 col-xs-12'>
+                    <div class='blue'>wedding location</div>
+                    @if (!string.IsNullOrEmpty(Convert.ToString(SessionUtilities.LocationName)))
+                    {
+                        <div class='pink'>@Convert.ToString(SessionUtilities.LocationName) &nbsp;<i class="fa fa-map-marker" aria-hidden="true"></i></div>
+                    }
+                </div>
+                <div style="clear:both"></div>
+            </div>
+        </div>
+
+
+        @RenderBody()
+
+        <div class='row footer'>
+            <div class='wrap'>
+                <div class='col-sm-6 col-xs-12' id='social'>
+                    <h5>Connect with us</h5>
+                    <a href="https://www.facebook.com/chossonkallah/" target="_blank"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+                    <a href=""><i class="fa fa-twitter" aria-hidden="true"></i></a>
+                    <a href=""><i aria-hidden='true' class='fa fa-pinterest'></i></a>
+                    <a href=""><i aria-hidden='true' class='fa fa-google-plus'></i></a>
+                    <a href="https://www.instagram.com/chossonkallah/" target="_blank"><i aria-hidden='true' class='fa fa-instagram'></i></a>
+                </div>
+                <div class='col-sm-6 col-xs-12' id='subscribe'>
+                    <h5>Join our mailing list for <br />exclusive savings and more...</h5>
+                    <div id="opt-in">
+                        <input type="email" value="" placeholder="subscribe for update emails" name="EMAIL" class="email" id="EMAIL" /><input type="submit" value="Subscribe" name="subscribe" class="button" />
+                    </div>
+                </div>
+                <div style="clear:both"></div>
+                <div class='col-12' id='footer-menu'>
+                    <a href=''>join our directory</a> | <a href=''>find local vendors</a> | <a href=''>vendor FAQ</a> | <a href=''>privacy policy</a> | <a href=''>contact us</a>
+                </div>
+            </div>
+        </div>
+
+        <div class='row footer-info'>
+            <div class='col-12'>
+                Copyright © 2006-2017 ChossonKallah, LLC – all rights reserved.
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>

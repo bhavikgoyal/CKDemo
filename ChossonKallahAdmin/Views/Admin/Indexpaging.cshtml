@@ -1,0 +1,70 @@
+@model IEnumerable<ChossonKallah.Models.AdminClass>
+
+<script>
+    $(document).ready(function () {
+        var mydata = $('#RawDatas').parent('td').html();
+        $('#RawDatas').parent().parent().parent().parent('table').replaceWith(mydata);
+        $("#AddressBookToggleAll").change(function () {
+            if ($(this).is(':checked')) {
+                $("input.k-checkbox[type=checkbox]").each(function () {
+                    $(this).attr('checked', true);
+                });
+            } else {
+                $("input.k-checkbox[type=checkbox]").each(function () {
+                    $(this).attr('checked', false);
+                });
+            }
+        });
+    });
+</script>
+
+<table class="table table-striped table-bordered bootstrap-datatable datatable dataTable">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Username)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Email)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Isactive)
+        </th>
+        <th>Action</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td style="display:none">
+                @Html.HiddenFor(model => item.Adminid)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Username)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Isactive)
+            </td>
+            <td>
+                <a class="btn btn-info" title="Edit" style="padding:2px 7px; margin:2px;" href="/Admin/Edit?Adminid=@item.Adminid "><i class="halflings-icon  edit"></i></a>
+                <a class="btn btn-success" title="View" style="padding:2px 7px; margin:2px;" href="/Admin/Details?Adminid=@item.Adminid "><i class="halflings-icon  zoom-in"></i></a>
+                <a class="btn btn-danger" title="Delete" style="padding:2px 7px; margin:2px;" href="/Admin/Delete?Adminid=@item.Adminid" onclick="return confirm('Are you sure you want to delete this record.'); "><i class="halflings-icon  trash"></i></a>
+            </td>
+        </tr>
+    }
+</table>
+
+
+
+
+
+
+

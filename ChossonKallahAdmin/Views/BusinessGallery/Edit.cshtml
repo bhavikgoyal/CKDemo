@@ -1,0 +1,84 @@
+ @model ChossonKallah.Models.BusinessGalleryClass 
+ 
+  
+ 
+ 
+ 
+  
+
+
+
+ @{ 
+			 ViewBag.Title = ""; 
+ 			  Layout =  "~/Views/Shared/_MasterPage.cshtml"; 
+  } 
+	 <script src="~/Scripts/jquery1.8.3.min.js"></script>
+	 <script src="~/Scripts/jquery-1.js"></script>
+	 <script>
+		 
+			 $(document).ready(function(){
+				 $('div.header-nav').css('display','none');
+			 });
+		 
+	 </script>@using (Html.BeginForm()) {
+			 @Html.AntiForgeryToken()
+			 @Html.ValidationSummary(true)
+		 <div class="box-header" data-original-title>
+			 <h2><i class="halflings-icon white user"></i><span class="break"></span>Edit Record</h2>
+			 <div class="box-icon">
+			 </div>
+		 </div>
+		 <div class="box-content">
+		  
+		 <div class="editor-field">
+			 @Html.HiddenFor(model => model.Businessgalleryid)
+		 </div>
+		 <div class="editor-label" style="font-weight:bold;">
+			 @Html.LabelFor(model => model.Businessid)
+		 </div>
+		 <div class="editor-field">
+			 @Html.EditorFor(model => model.Businessid)
+			 @Html.ValidationMessageFor(model => model.Businessid)
+		 </div>
+		 <div class="editor-label" style="font-weight:bold;">
+			 @Html.LabelFor(model => model.Imagename)
+		 </div>
+		 <div class="editor-field">
+			 @Html.EditorFor(model => model.Imagename)
+			 @Html.ValidationMessageFor(model => model.Imagename)
+		 </div>
+		 <div class="editor-label" style="font-weight:bold;">
+			 @Html.LabelFor(model => model.Isactive)
+		 </div>
+		 <div class="editor-field">
+			 @Html.EditorFor(model => model.Isactive)
+			 @Html.ValidationMessageFor(model => model.Isactive)
+		 </div>
+		 <div class="editor-label" style="font-weight:bold;">
+			 @Html.LabelFor(model => model.Sequence)
+		 </div>
+		 <div class="editor-field">
+			 @Html.EditorFor(model => model.Sequence)
+			 @Html.ValidationMessageFor(model => model.Sequence)
+		 </div>
+		 
+		 <div><input type="submit" value="Update" class="btn btn-primary" />
+		 
+		 @Html.ActionLink("Back to List", "Index",null,new{@class="btn"})</div>
+		 
+		 </div> 
+}
+
+  
+ 
+
+ <style> body{ 
+ background-color: #EDEDED; 
+} 
+ .fls{ 
+ padding:5px 20px; 
+} 
+ .dfv{ 
+ padding:5px 20px; 
+} 
+ </style>

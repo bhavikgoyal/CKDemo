@@ -1,0 +1,85 @@
+ @model ChossonKallah.Models.WebsiteBannerClass 
+ 
+  
+ 
+ 
+ 
+  
+
+
+
+ @{ 
+     ViewBag.Title = "";
+     Layout = "~/Views/Shared/HomeLayout.cshtml";
+  } 
+	 <script src="~/Scripts/jquery1.8.3.min.js"></script>
+	 <script src="~/Scripts/jquery-1.js"></script>
+	 <script>
+		 
+			 $(document).ready(function(){
+				 $('div.header-nav').css('display','none');
+			 });
+		 
+	 </script>
+@{
+
+		 <div class="box-header" data-original-title>
+			 <h2><i class="halflings-icon white user"></i><span class="break"></span>View Record</h2>
+			 <div class="box-icon">
+			 </div>
+		 </div>
+		 <div class="box-content">
+		  
+		 <div class="editor-field">
+			 @Html.HiddenFor(model => model.Websitebannerid)
+		 </div>
+		 <div class="editor-label" style="font-weight:bold;" >
+			 @Html.DisplayNameFor(model => model.Bannername)
+		 </div>
+		 <div class="editor-field">
+			 @Html.DisplayFor(model => model.Bannername)
+		 </div>
+		 <div class="editor-label" style="font-weight:bold;" >
+			 @Html.DisplayNameFor(model => model.Isactive)
+		 </div>
+		 <div class="editor-field">
+			 @Html.DisplayFor(model => model.Isactive)
+		 </div>
+		 <div class="editor-label" style="font-weight:bold;" >
+			 @Html.DisplayNameFor(model => model.Sequence)
+		 </div>
+		 <div class="editor-field">
+			 @Html.DisplayFor(model => model.Sequence)
+		 </div>
+		 <div class="editor-label" style="font-weight:bold;" >
+			 @Html.DisplayNameFor(model => model.Bannertextline1)
+		 </div>
+		 <div class="editor-field">
+			 @Html.DisplayFor(model => model.Bannertextline1)
+		 </div>
+		 <div class="editor-label" style="font-weight:bold;" >
+			 @Html.DisplayNameFor(model => model.Bannertextline2)
+		 </div>
+		 <div class="editor-field">
+			 @Html.DisplayFor(model => model.Bannertextline2)
+		 </div>
+		 
+		 
+		 <div>@Html.ActionLink("Back to List", "Index",null,new{@class="btn"})</div>
+		 
+		 </div> 
+}
+
+  
+ 
+
+ <style> body{ 
+ background-color: #EDEDED; 
+} 
+ .fls{ 
+ padding:5px 20px; 
+} 
+ .dfv{ 
+ padding:5px 20px; 
+} 
+ </style>

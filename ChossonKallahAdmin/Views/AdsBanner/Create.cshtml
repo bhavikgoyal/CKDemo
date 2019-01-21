@@ -1,0 +1,176 @@
+@model ChossonKallahAdmin.EF6.AdsBanner
+
+@{
+    ViewBag.PageHead = "Ads Banner";
+    Layout = "~/Views/Shared/HomeLayout.cshtml";
+}
+
+<script>
+    $(document).ready(function () {
+        $('div.header-nav').css('display', 'none');
+    });
+</script>
+<link href="~/Content/datetimepicker/css/bootstrap_datepicker.css" rel="stylesheet" />
+@using (Html.BeginForm("Create", "AdsBanner", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="alert alert-success" id="success" style="margin-top:20px;display:none">
+        <strong>Success!</strong> <span class="successmessage"></span>
+    </div>
+    <div class="alert alert-danger" id="error" style="margin-top:20px;display:none">
+        <strong>Error!</strong> <span class="errormessage"></span>
+    </div>
+    if (!string.IsNullOrEmpty(Convert.ToString(ViewBag.AdsBannerExists)))
+    {
+        <div class="alert alert-danger" id="error1" style="margin-top:20px">
+            <strong>Error!</strong> <span class="errormessage">@Convert.ToString(ViewBag.AdsBannerExists)</span>
+        </div>
+    }
+    <br />
+    <div class="panel panel-default">
+        <div class="panel-heading">Add Ads Banner</div>
+        <div class="panel-body">
+            <div class="row clearfix">
+                <div class="form-group">
+                    @Html.HiddenFor(model => model.AdsBannerID)
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Ads Banner Name&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.AdsBannerName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.AdsBannerName, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Ads Banner Image&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.AdsBannerImage, new { @class = "form-control", @type = "file" })
+                        @Html.ValidationMessageFor(model => model.AdsBannerImage, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Category&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.DropDownListFor(@model=>model.CategoryID, (IEnumerable<SelectListItem>)(ViewBag.Categories), new { @class = "form-control"})
+                        @Html.Hidden("Categories", "0")
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Vendor&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.DropDownListFor(@model => model.VendorID, (IEnumerable<SelectListItem>)(ViewBag.Vendors), new { @class = "form-control"})
+                        @Html.Hidden("Vendors", "0")
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Start Date&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.StartDate, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">End Date&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.EndDate, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Vendor&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.DropDownListFor(@model => model.AdsBannerPosition, (IEnumerable<SelectListItem>)(ViewBag.Positions), new { @class = "form-control" })
+                        @Html.Hidden("Positions", "0")
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Is Active</label>
+                        @Html.EditorFor(model => model.IsActive, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    <input type="submit" onclick="return chckvalidation()" class="btn  btn-primary pull-left" style="margin-right:12px;" value="Save" />
+                    @Html.ActionLink("Cancel", "Index", null, new { @class = "btn  btn-primary pull-left", @style = "margin-right:12px;" })
+                </div>
+            </div>
+        </div>
+    </div>
+}
+    <script src="~/Content/datetimepicker/js/bootstrap_datepicker.js"></script>
+<script src="~/Content/js/EmailValidation.js"></script>
+<script>
+    function chckvalidation() {
+        debugger;
+        var IsError = true;
+        var errormessage = "";
+        $('.errormessage').html(errormessage);
+        if ($('#AdsBannerName').val() == "") {
+            $('.errormessage').html('<br/> - Ads Banner Name is required.');
+            errormessage = $('.errormessage').html();
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            IsError = false;
+            $('#error').show();
+        }
+    } if ($('#AdsBannerPosition').val() == "") {
+        $('.errormessage').html('<br/> - Ads Banner Position is required.');
+        errormessage = $('.errormessage').html();
+        $("html, body").animate({ scrollTop: 0 }, "slow");
+        IsError = false;
+        $('#error').show();
+    }
+        if ($('#StartDate').val() == "") {
+            $('.errormessage').html(errormessage + "<br/> - Start Date is required.");
+            errormessage = $('.errormessage').html();
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            IsError = false;
+            $('#error').show();
+        }
+        if ($('#EndDate').val() == "") {
+            $('.errormessage').html(errormessage + "<br/> - End Date is required.");
+            errormessage = $('.errormessage').html();
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            IsError = false;
+            $('#error').show();
+        }
+        if ($('#CategoryID').val() == "0") {
+            $('.errormessage').html(errormessage + "<br/> - Category is required.");
+            errormessage = $('.errormessage').html();
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            IsError = false;
+            $('#error').show();
+        }
+        if ($('#VendorID').val() == "0") {
+            $('.errormessage').html(errormessage + "<br/> - Vendor is required.");
+            errormessage = $('.errormessage').html();
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            IsError = false;
+            $('#error').show();
+        }
+        return IsError;
+    }
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var dateToday = new Date();
+        $('#StartDate').datepicker({
+            format: "mm/dd/yyyy",
+            autoclose: true,
+            startDate: dateToday
+        });
+
+        $('#EndDate').datepicker({
+            format: "mm/dd/yyyy",
+            autoclose: true,
+            startDate: dateToday
+        });
+
+    });
+</script>
+<style>
+    body {
+        background-color: #EDEDED;
+    }
+
+    .fls {
+        padding: 5px 20px;
+    }
+
+    .dfv {
+        padding: 5px 20px;
+    }
+</style>

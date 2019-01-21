@@ -1,0 +1,868 @@
+@model ChossonKallahAdmin.EF6.BusinessDirectory
+@using System.Web.Configuration
+@{
+    ViewBag.PageHead = "Edit Listing";
+    Layout = "~/Views/Shared/HomeLayout.cshtml";
+}
+<link href="~/Content/css/lightbox.min.css" rel="stylesheet" />
+<script>
+    $(document).ready(function () {
+        $('div.header-nav').css('display', 'none');
+        debugger;
+        if ('@Model.BusinessImage'!= "")
+            $("#imgBusinessimage").attr('src', "@WebConfigurationManager.AppSettings["BusinessImageURL"]" + '@Model.BusinessName' + "/" + '@Model.BusinessImage');
+        //else
+        //    $("#BusinessimageView").hide();
+
+        if ('@Model.BusinessLogo' != "")
+            $("#imgBusinessLogo").attr('src', "@WebConfigurationManager.AppSettings["BusinessLogoURL"]" + '@Model.BusinessName' + "/" + '@Model.BusinessLogo');
+        //else
+        //    $("#BusinesslogoView").hide();
+
+        var catids = '@Convert.ToString(ViewBag.CategoryIdWithComma)';
+        $('#CategoryId').val(catids.split(','));
+        $('#CategoryId').select2({
+            placeholder: '--Select Categories--'
+        });
+    });
+</script>
+<script src="~/Content/js/chosen.jquery.js"></script>
+
+@using (Html.BeginForm("Edit", "BusinessDirectory", FormMethod.Post, new { enctype = "multipart/form-data", @id = "editform" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="alert alert-success" id="success" style="margin-top:20px;display:none">
+        <strong>Success!</strong> <span class="successmessage"></span>
+    </div>
+    <div class="alert alert-danger" id="error" style="margin-top:20px;display:none">
+        <strong>Error!</strong> <span class="errormessage"></span>
+    </div>
+    if (!string.IsNullOrEmpty(Convert.ToString(ViewBag.BusinessDirectoryExists)))
+    {
+        <div class="alert alert-danger" id="error1" style="margin-top:20px">
+            <strong>Error!</strong> <span class="errormessage1">@Convert.ToString(ViewBag.BusinessDirectoryExists)</span>
+        </div>
+    }
+    <br />
+    <div class="panel panel-default">
+        <div class="panel-heading">Edit Listing</div>
+        <div class="panel-body">
+            <div class="row clearfix">
+                <div class="form-group">
+                    @Html.HiddenFor(model => model.BusinessID)
+                    @Html.HiddenFor(model => model.CreatedOn)
+                    @Html.HiddenFor(model => model.IsDeleted)
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Listing Name&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.BusinessName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.BusinessName, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Listing URL&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.BusinessURL, new { @class = "form-control", @onkeypress = "return onlyAlphabetsandNumber(event)" })
+                        @Html.ValidationMessageFor(model => model.BusinessURL, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Phone Number&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.PhoneNumber, new { @class = "form-control", @onkeypress = "return PhoneNumber(event)" })
+                        @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Phone Number 2&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.PhoneNumber2, new { @class = "form-control", @onkeypress = "return PhoneNumber(event)" })
+                        @Html.ValidationMessageFor(model => model.PhoneNumber2, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Category&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.DropDownList("CategoryId", (IEnumerable<SelectListItem>)(ViewBag.Categories), new { @class = "form-control chosen-select", @multiple = true })
+                        @Html.Hidden("Categories", new { id = "Categories" })
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Location&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.DropDownListFor(model => model.LocationId, (IEnumerable<SelectListItem>)(ViewBag.Locations), "--Select Location--", new { @class = "form-control" })
+                    </div>
+
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Address Line 1&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.Address, new { @class = "form-control", @onFocus = "geolocate()" })
+                        @Html.ValidationMessageFor(model => model.Address, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Address Line 2&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.AddressLine2, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.AddressLine2, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">City&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.City, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.City, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group " style="display:none;">
+                        <label class="control-label">State&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.State, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.State, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Zipcode&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.Zipcode, new { @class = "form-control", @onkeypress = "return onlyNumber(event)" })
+                        @Html.ValidationMessageFor(model => model.Zipcode, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+                </div>
+                <div class="clearfix" style="display:none;">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Location Latitude&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.LocationLatitude, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.LocationLatitude, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Location Longitude&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.LocationLongitude, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.LocationLongitude, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+                   
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Website (Sample: www.google.com)&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.Website, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Website, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+                    
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Email &nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Email, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Listing Video URL &nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.BusinessVideoURL, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.BusinessVideoURL, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Is Active</label>
+                        @Html.EditorFor(model => model.IsActive, new { @class = "form-control" })
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Is Featured</label>
+                        @Html.EditorFor(model => model.IsFeatured, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Has Brochure</label>
+                        @Html.EditorFor(model => model.HasBrochure, new { @class = "form-control" })
+                    </div>
+                </div>
+
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Listing Image</label>
+                        @Html.TextBoxFor(model => model.BusinessImage, new { @class = "form-control", @type = "file", @onchange = "fileCheck(this);" })
+                        @Html.ValidationMessageFor(model => model.BusinessImage, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <img id="imgBusinessimage" height="80px;" />
+                    </div>
+
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Listing Logo</label>
+                        @Html.TextBoxFor(model => model.BusinessLogo, new { @class = "form-control", @type = "file", @onchange = "fileCheck(this);" })
+                        @Html.ValidationMessageFor(model => model.BusinessLogo, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <img id="imgBusinessLogo" height="80px;" />
+                    </div>
+                </div>
+
+                <div class="clearfix"></div>
+
+                <br />
+                <div class="clearfix">
+                    <br />
+                    <div class="col-lg-12 col-md-12 col-sm-12 form-group ">
+                        <label class="control-label">Listing Gallery</label>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.js"></script>
+                        @*@using (Html.BeginForm("Index", "BusinessGallery", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                            {*@
+                        <div action="/Index" class="dropzone" drop-zone="" id="file-dropzone"></div>
+                        <ul class="visualizacao sortable dropzone-previews" style="border:1px solid #000"></ul>
+                        <div class="preview" style="display:none;">
+                            <li class="lilist dz-processing dz-image-preview dz-error dz-complete ">
+                                <div>
+                                    <div class="dz-preview dz-file-preview dropzone dz-clickable" id="myDrop">
+                                        <img data-dz-thumbnail class="myimages" />
+                                        <div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>
+                                    </div>
+                                </div>
+                                <a class="dz-remove manualdelete" href="javascript:undefined;" data-dz-remove="">Remove file</a>
+                            </li>
+                        </div>
+                        <div class="col-md-12" style="text-align:center;display:none;">
+                            <input type="button" onclick="UploadImages();" class="btn btn-primary" value="Upload" />
+                        </div>
+                        @*}*@
+                    </div>
+
+                </div>
+
+                <div class="clearfix clear-fix clear" style="clear:both;"><br /></div>
+
+                <div class="form-group col-md-12 clear-fix clearfix clear" style="clear:both;">
+                    <input type="submit" onclick="return chckvalidation()" class="btn  btn-primary pull-left" style="margin-right:12px;" value="Update" />
+                    @Html.ActionLink("Cancel", "Index", null, new { @class = "btn  btn-primary pull-left", @style = "margin-right:12px;" })
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<script src="~/Content/js/EmailValidation.js"></script>
+<script>
+    function chckvalidation() {
+
+        var IsError = true;
+        var errormessage = "";
+        if ($('#BusinessName').val() == "") {
+            $('.errormessage').html('<br/> - Listing Name is required.');
+            errormessage = $('.errormessage').html();
+            IsError = false;
+            $('#error').show();
+        }
+        if ($('#BusinessURL').val() == "") {
+            $('.errormessage').html(errormessage + "<br/> - Listing URL is required.");
+            errormessage = $('.errormessage').html();
+            IsError = false;
+            $('#error').show();
+        }
+        if ($('#PhoneNumber').val() == "") {
+            $('.errormessage').html(errormessage + "<br/> - Phone Number is required.");
+            errormessage = $('.errormessage').html();
+            IsError = false;
+            $('#error').show();
+        }
+        debugger;
+        if ($('#LocationId').val() == "") {
+
+            $('.errormessage').html(errormessage + "<br/> - Location is required.");
+            errormessage = $('.errormessage').html();
+            IsError = false;
+            $('#error').show();
+        }
+        if ($('#Address').val() == "") {
+            $('.errormessage').html(errormessage + "<br/> - Address Line 1 is required.");
+            errormessage = $('.errormessage').html();
+            IsError = false;
+            $('#error').show();
+        }
+        if ($('#Addressline2').val() == "") {
+            $('.errormessage').html(errormessage + "<br/> - Address Line 2 is required.");
+            errormessage = $('.errormessage').html();
+
+            IsError = false;
+            $('#error').show();
+        }
+        //if ($('#LocationLatitude').val() == "") {
+        //    $('.errormessage').html(errormessage + "<br/> - Location Latitude is required.");
+        //    errormessage = $('.errormessage').html();
+
+        //    IsError = false;
+        //    $('#error').show();
+        //}
+        //if ($('#LocationLongitude').val() == "") {
+        //    $('.errormessage').html(errormessage + "<br/> - Location Longitude is required.");
+        //    errormessage = $('.errormessage').html();
+
+        //    IsError = false;
+        //    $('#error').show();
+        //}
+        if ($('#Zipcode').val() == "") {
+            $('.errormessage').html(errormessage + "<br/> - Zipcode is required.");
+            errormessage = $('.errormessage').html();
+
+            IsError = false;
+            $('#error').show();
+        }
+        if ($('#City').val() == "") {
+            $('.errormessage').html(errormessage + "<br/> - City is required.");
+            errormessage = $('.errormessage').html();
+
+            IsError = false;
+            $('#error').show();
+        }
+        //if ($('#State').val() == "") {
+        //    $('.errormessage').html(errormessage + "<br/> - State is required.");
+        //    errormessage = $('.errormessage').html();
+
+        //    IsError = false;
+        //    $('#error').show();
+        //}
+        if ($('#Website').val() == "") {
+            $('.errormessage').html(errormessage + "<br/> - Website is required.");
+            errormessage = $('.errormessage').html();
+
+            IsError = false;
+            $('#error').show();
+        }
+        else {
+
+            if (isUrlValid($('#Website').val())) {
+
+            }
+            else {
+                $('.errormessage').html(errormessage + "<br/> - Website is not valid.");
+                errormessage = $('.errormessage').html();
+
+                IsError = false;
+                $('#error').show();
+            }
+        }
+        if ($('#PhoneNumber2').val() == "") {
+            $('.errormessage').html(errormessage + "<br/> - Phone Number 2 is required.");
+            errormessage = $('.errormessage').html();
+
+            IsError = false;
+            $('#error').show();
+        }
+        if ($('#Email').val() == "") {
+            $('.errormessage').html(errormessage + "<br/> - Email is required.");
+            errormessage = $('.errormessage').html();
+
+            IsError = false;
+            $('#error').show();
+        }
+        else {
+
+            if (IsEmail($('#Email').val())) {
+
+            } else {
+                $('.errormessage').html(errormessage + "<br/> - Enter valid email.");
+                errormessage = $('.errormessage').html();
+                IsError = false;
+                $('#error').show();
+            }
+        }
+        if ($('#BusinessVideoURL').val() == "") {
+            $('.errormessage').html(errormessage + "<br/> - Listing Video URL is required.");
+            errormessage = $('.errormessage').html();
+
+            IsError = false;
+            $('#error').show();
+        }
+
+        if ($('#CategoryId').val() == "" || $('#CategoryId').val() == null) {
+            $('.errormessage').html(errormessage + "<br/> - Category is required.");
+            errormessage = $('.errormessage').html();
+
+            IsError = false;
+            $('#error').show();
+        }
+
+        else {
+            setValue();
+        }
+        if (!IsError) {
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+        } else {
+            IsError = UploadImages();
+        }
+        return IsError;
+    }
+    function setValue() {
+        selprod = $('#CategoryId').val().join(',');
+        $('#Categories').val(selprod);
+    }
+</script>
+<script>
+    $('#Phonenumber,#Phonenumber2').on('paste', function (e) {
+        var $this = $(this);
+        setTimeout(function (e) {
+            if (($this.val()).match(/[^0-9\(\)\+\-\s]/)) {
+                setTimeout(function (e) {
+                    $('#error').show();
+                    $('.errormessage').html('<br/> - Phone Number must be contain numbers, space, +(plus) and dash(-).');
+                    $("html, body").animate({ scrollTop: 0 }, "slow");
+                    $this.val(null);
+                }, 25);
+            }
+        }, 5);
+    });
+    $('#Zipcode').on('paste', function (e) {
+        var $this = $(this);
+        setTimeout(function (e) {
+            if (($this.val()).match(/[^0-9]/)) {
+                setTimeout(function (e) {
+                    $('#error').show();
+                    $('.errormessage').html('<br/> - Zipcode must be numeric.');
+                    $("html, body").animate({ scrollTop: 0 }, "slow");
+                    $this.val(null);
+                }, 25);
+            }
+        }, 5);
+    });
+    $('#Businessurl').on('paste', function (e) {
+        var $this = $(this);
+        setTimeout(function (e) {
+            if (($this.val()).match(/[^0-9a-zA-Z\-]/)) {
+                setTimeout(function (e) {
+                    $('#error').show();
+                    $('.errormessage').html('<br/> - Listing URL must be contain alphabets, numbers, space and dash(-).');
+                    $("html, body").animate({ scrollTop: 0 }, "slow");
+                    $this.val(null);
+                }, 25);
+            }
+        }, 5);
+    });
+    function fileCheck(obj) {
+        var fileExtension = ['jpeg', 'jpg', 'png', 'gif', 'bmp'];
+        if ($.inArray($(obj).val().split('.').pop().toLowerCase(), fileExtension) == -1) {
+            alert("Only '.jpeg','.jpg', '.png', '.gif', '.bmp' formats are allowed.");
+            $(obj).val(null);
+        }
+    }
+</script>
+<style>
+    body {
+        background-color: #EDEDED;
+    }
+
+    .fls {
+        padding: 5px 20px;
+    }
+
+    .dfv {
+        padding: 5px 20px;
+    }
+</style>
+
+
+
+@* Gallery *@
+<style>
+    ul.visualizacao.sortable.dropzone-previews.ui-sortable {
+        border: none !important;
+    }
+
+    .dz-default.dz-message {
+        padding: 50px 0px;
+        margin-top: 3% 1%;
+        text-align: center;
+        border: 1px solid #000;
+    }
+
+    .sortable {
+        padding: 0;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+        .sortable li {
+            float: left;
+            width: 120px;
+            height: 150px;
+            overflow: hidden;
+            border: 1px solid red;
+            text-align: center;
+            margin: 5px;
+        }
+
+    li.sortable-placeholder {
+        border: 1px dashed #CCC;
+        background: none;
+    }
+
+    .dz-image-preview {
+        position: relative;
+    }
+
+    .image-cancel img {
+        color: red;
+        font-size: 18px;
+        position: absolute;
+        top: 0;
+        right: 0;
+        font-weight: bold;
+        margin-right: 10px;
+        cursor: pointer;
+        display: none;
+        z-index: 100;
+    }
+
+    .dz-default.dz-message span {
+        color: #000;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .dz-image-preview:hover .image-cancel img {
+        background-color: #000;
+        display: block;
+    }
+
+    a.dz-remove {
+        color: red;
+        padding: 5px 0px !important;
+        display: inline-block;
+    }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.js"></script>
+
+<script>
+        var Businessid = 0;
+        $(document).ready(function () {
+            $('.sortable').sortable();
+            if (window.location.href.indexOf('Businessid') >= 0) {
+                var splitdata = window.location.href.split('=');
+                Businessid = splitdata[1];
+
+            }
+            bindPagingData(Businessid);
+
+            $.getScript('/Content/js/dropzone.min.js', function () {
+                $('#file-dropzone').dropzone({
+                    url: "/BusinessDirectory/SelectGalleryImages",
+                    //url: "/BusinessGallery/Index",
+                    maxFilesize: 100,
+                    paramName: { 'Businessid': Businessid },
+                    maxThumbnailFilesize: 99999,
+                    previewsContainer: '.visualizacao',
+                    previewTemplate: $('.preview').html(),
+                    addRemoveLinks: true,
+                    init: function () {
+                        this.on('completemultiple', function (file, json) {
+                            $('.sortable').sortable('enable');
+                            console.log('completemultiple');
+                        });
+                        this.on('success', function (file, json) {
+                            debugger;
+                            console.log('success');
+                        });
+                        this.on('drop', function (file) {
+                            console.log('drop');
+                        });
+                    }
+                });
+            });
+
+            $('a.manualdelete').click(function () {
+                $(this).parent('li').remove();
+            });
+
+        });
+        function bindPagingData(Businessid) {
+            $.ajax({
+                type: "Get",
+                cache: false,
+                url: "/BusinessDirectory/SelectGalleryImages",
+                data: { 'Businessid': Businessid },
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    debugger;
+                    //response = JSON.parse(response);
+                    if (response.length > 0) {
+                        $('.sortable').sortable('enable');
+                    }
+                    for (var i = 0; i < response.length; i++) {
+                        var tbl = $('li.lilist:eq(0)').clone(true);
+                        $(tbl).find('.myimages').attr('alt', response[i].ImageName)
+                        $(tbl).find('.myimages').attr('src', '@Convert.ToString(WebConfigurationManager.AppSettings["ListingGalleryAddEdit"])' + response[i].BusinessName + "/" + response[i].ImageName);
+                        $('ul.visualizacao').append(tbl);
+                    }
+                    $('#success').hide();
+                    $('#error').hide();
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+                }
+            });
+        }
+        function UploadImages() {
+            var Businessid = 0;
+            if (window.location.href.indexOf('Businessid') >= 0) {
+                var splitdata = window.location.href.split('=');
+                Businessid = splitdata[1];
+            }
+            console.log(Businessid);
+            var form = new FormData();
+            for (var i = 0; i < $('.myimages').length; i++) {
+                if ($('.myimages:eq(' + i + ')').attr('alt') != undefined && $('.myimages:eq(' + i + ')').attr('src') != undefined)
+                    form.append($('.myimages:eq(' + i + ')').attr('alt'), $('.myimages:eq(' + i + ')').attr('src'));
+
+            }
+            form.append('Businessid', Businessid);
+            $.ajax({
+                type: "POST",
+                cache: false,
+                url: "/BusinessDirectory/UploadImages",
+                data: form,
+                contentType: false,
+                processData: false,
+                async:false,
+                success: function (response) {
+                    if (response.indexOf('Exception') >= 0) {
+                        $('.errormessage').html(errormessage + "<br/> - "+response);
+                        $('#error').show();
+                        return false;
+                    } else {
+                        return true;
+                    }
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+                }
+            });
+        }
+        //$.getScript('/Content/js/dropzone.min.js', function () {
+        //    $('#file-dropzone').dropzone({
+        //        url: "/BusinessGallery/Index",
+        //        maxFilesize: 100,
+        //        paramName: "uploadfile",
+        //        maxThumbnailFilesize: 99999,
+        //        previewsContainer: '.visualizacao',
+        //        previewTemplate: $('.preview').html(),
+        //        addRemoveLinks: true,
+        //        init: function () {
+        //            this.on('completemultiple', function (file, json) {
+        //                $('.sortable').sortable('enable');
+        //                console.log('completemultiple');
+        //            });
+        //            this.on('success', function (file, json) {
+        //                debugger;
+        //                console.log('success');
+        //            });
+        //            this.on('drop', function (file) {
+        //                console.log('drop');
+        //            });
+        //        }
+        //    });
+        //});
+</script>
+@* Gallery *@
+
+@*Google Address*@
+
+<script>
+    // This example displays an address form, using the autocomplete feature
+    // of the Google Places API to help users fill in the information.
+
+    // This example requires the Places library. Include the libraries=places
+    // parameter when you first load the API. For example:
+    // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
+
+    var geocoder;
+
+    var placeSearch, autocomplete;
+    var componentForm = {
+        street_number: 'long_name',
+        route: 'long_name',
+        locality: 'long_name',
+        administrative_area_level_1: 'long_name',
+        administrative_area_level_2: 'long_name',
+        country: 'long_name',
+        postal_code: 'long_name',
+        country: 'long_name',
+        sublocality: 'long_name'
+    };
+    var componentFormFields = {
+        street_number: '',
+        route: '',
+        locality: '',
+        administrative_area_level_1: '',
+        administrative_area_level_2: '',
+        country: '',
+        postal_code: '',
+        country: '',
+        sublocality: ''
+    };
+
+    var latitude, longitude;
+
+    function initAutocomplete() {
+        // Create the autocomplete object, restricting the search to geographical
+        // location types.
+        geocoder = new google.maps.Geocoder();
+        autocomplete = new google.maps.places.Autocomplete(
+            (document.getElementById('Address')),
+            { types: ['geocode'] });
+
+        // When the user selects an address from the dropdown, populate the address
+        // fields in the form.
+        autocomplete.addListener('place_changed', fillInAddress);
+    }
+
+    function fillInAddress() {
+
+        // Get the place details from the autocomplete object.
+        var place = autocomplete.getPlace();
+
+        // Get each component of the address from the place details
+        // and fill the corresponding field on the form.
+        if (place.address_components == undefined) {
+            console.log(place.name);
+            debugger;
+            getByAddresslatlot(place.name);
+        } else {
+            for (var i = 0; i < place.address_components.length; i++) {
+                var addressType = place.address_components[i].types[0];
+                if (componentForm[addressType]) {
+                    var val = place.address_components[i][componentForm[addressType]];
+                    console.log(addressType + ' - ' + val);
+                    debugger;
+                    if (addressType == 'administrative_area_level_1') {
+                        componentFormFields.administrative_area_level_1 = val;
+                    } else if (addressType == 'administrative_area_level_2') {
+                        componentFormFields.administrative_area_level_2 = val;
+                    } else if (addressType == 'country') {
+                        componentFormFields.country = val;
+                    } else if (addressType == 'locality') {
+                        componentFormFields.locality = val;
+                    } else if (addressType == 'postal_code') {
+                        componentFormFields.postal_code = val;
+                    } else if (addressType == 'route') {
+                        componentFormFields.route = val;
+                    } else if (addressType == 'street_number') {
+                        componentFormFields.street_number = val;
+                    } else if (addressType == 'sublocality') {
+                        componentFormFields.sublocality = val;
+                        //} else if (addressType == componentFormFields.administrative_area_level_1) {
+                    }
+                    //document.getElementById(addressType).value = val;
+                }
+            }
+            latitude = place.geometry.viewport.l.l;
+            longitude = place.geometry.viewport.j.l;
+        }
+        console.log('latitude: ' + latitude);
+        console.log('longitude: ' + longitude);
+
+
+        setTimeout(function () {
+            $('#City').val(componentFormFields.locality);
+            $('#Zipcode').val(componentFormFields.postal_code);
+            $('#LocationLatitude').val(latitude);
+            $('#LocationLongitude').val(longitude);
+            $('#State').val(componentFormFields.administrative_area_level_1);
+            $('#Address').val(componentFormFields.administrative_area_level_2);
+        }, 500);
+
+    }
+
+    function getByAddresslatlot(address) {
+
+        console.log('try to find by address...');
+        geocoder.geocode({ 'address': address }, function (results, status) {
+
+            if (status == google.maps.GeocoderStatus.OK) {
+
+                console.log('in find by address...');
+                for (var i = 0; i < results.address_components.length; i++) {
+                    var addressType = results.address_components[i].types[0];
+                    if (componentForm[addressType]) {
+                        var val = results.address_components[i][componentForm[addressType]];
+                        console.log(addressType + ' - ' + val);
+                        debugger;
+                        if (addressType == 'administrative_area_level_1') {
+                            componentFormFields.administrative_area_level_1 = val;
+                        } else if (addressType == 'administrative_area_level_2') {
+                            componentFormFields.administrative_area_level_2 = val;
+                        } else if (addressType == 'country') {
+                            componentFormFields.country = val;
+                        } else if (addressType == 'locality') {
+                            componentFormFields.locality = val;
+                        } else if (addressType == 'postal_code') {
+                            componentFormFields.postal_code = val;
+                        } else if (addressType == 'route') {
+                            componentFormFields.route = val;
+                        } else if (addressType == 'street_number') {
+                            componentFormFields.street_number = val;
+                        } else if (addressType == 'sublocality') {
+                            componentFormFields.sublocality = val;
+                            //} else if (addressType == componentForm.administrative_area_level_1) {
+                        }
+                        //document.getElementById(addressType).value = val;
+                    }
+                }
+                latitude = results[0].geometry.viewport.l.l;
+                longitude = results[0].geometry.viewport.j.l;
+                console.log('latitude: ' + latitude);
+                console.log('longitude: ' + longitude);
+                var latitude1 = results[0].geometry.location.lat();
+                var longitude1 = results[0].geometry.location.lng();
+                console.log('lat by address: ' + latitude1);
+                console.log('long by address: ' + longitude1);
+            }
+        });
+    }
+
+    // Bias the autocomplete object to the user's geographical location,
+    // as supplied by the browser's 'navigator.geolocation' object.
+    function geolocate() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var geolocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                var circle = new google.maps.Circle({
+                    center: geolocation,
+                    radius: position.coords.accuracy
+                });
+                autocomplete.setBounds(circle.getBounds());
+            });
+        }
+    }
+</script>
+<script src='http://maps.googleapis.com/maps/api/js?v=3&amp;libraries=places&key=AIzaSyBVB1A83HYkoyoLoiTtuzxNsh0-8KnkWkg&callback=initAutocomplete'></script>
+
+
+@*<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVB1A83HYkoyoLoiTtuzxNsh0-8KnkWkg&callback=initAutocomplete"
+    type="text/javascript"></script>*@
+@*<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVB1A83HYkoyoLoiTtuzxNsh0-8KnkWkg&libraries=places&callback=initAutocomplete"
+    async defer></script>*@
+
+
+
+@*Google Address*@

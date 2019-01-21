@@ -1,0 +1,160 @@
+@model ChossonKallah.Models.BusinessDirectoryClass
+
+
+
+
+
+
+
+
+
+@{
+    ViewBag.PageHead = "Business Directories";
+    Layout = "~/Views/Shared/HomeLayout.cshtml";
+}
+<script src="~/Scripts/jquery1.8.3.min.js"></script>
+<script src="~/Scripts/jquery-1.js"></script>
+<script>
+
+    $(document).ready(function () {
+        $('div.header-nav').css('display', 'none');
+    });
+
+</script>
+@{
+
+    <div class="box-header" data-original-title>
+        <h2><i class="halflings-icon white user"></i><span class="break"></span>View Record</h2>
+        <div class="box-icon">
+        </div>
+    </div>
+    <div class="box-content">
+
+        <div class="editor-field">
+            @Html.HiddenFor(model => model.Businessid)
+        </div>
+        <div class="editor-label" style="font-weight:bold;">
+            @Html.DisplayNameFor(model => model.Businessname)
+        </div>
+        <div class="editor-field">
+            @Html.DisplayFor(model => model.Businessname)
+        </div>
+        <div class="editor-label" style="font-weight:bold;">
+            @Html.DisplayNameFor(model => model.Website)
+        </div>
+        <div class="editor-field">
+            @Html.DisplayFor(model => model.Website)
+        </div>
+        <div class="editor-label" style="font-weight:bold;">
+            @Html.DisplayNameFor(model => model.Businessurl)
+        </div>
+        <div class="editor-field">
+            @Html.DisplayFor(model => model.Businessurl)
+        </div>
+        <div class="editor-label" style="font-weight:bold;">
+            @Html.DisplayNameFor(model => model.Phonenumber)
+        </div>
+        <div class="editor-field">
+            @Html.DisplayFor(model => model.Phonenumber)
+        </div>
+        <div class="editor-label" style="font-weight:bold;">
+            @Html.DisplayNameFor(model => model.Businessimage)
+        </div>
+        <div class="editor-field">
+            @Html.DisplayFor(model => model.Businessimage)
+        </div>
+        <div class="editor-label" style="font-weight:bold;">
+            @Html.DisplayNameFor(model => model.Locationid)
+        </div>
+        <div class="editor-field">
+            @Html.DisplayFor(model => model.Locationid)
+        </div>
+        <div class="editor-label" style="font-weight:bold;">
+            @Html.DisplayNameFor(model => model.Address)
+        </div>
+        <div class="editor-field">
+            @Html.DisplayFor(model => model.Address)
+        </div>
+        <div class="editor-label" style="font-weight:bold;">
+            @Html.DisplayNameFor(model => model.Addressline2)
+        </div>
+        <div class="editor-field">
+            @Html.DisplayFor(model => model.Addressline2)
+        </div>
+        <div class="editor-label" style="font-weight:bold;">
+            @Html.DisplayNameFor(model => model.City)
+        </div>
+        <div class="editor-field">
+            @Html.DisplayFor(model => model.City)
+        </div>
+        <div class="editor-label" style="font-weight:bold;">
+            @Html.DisplayNameFor(model => model.State)
+        </div>
+        <div class="editor-field">
+            @Html.DisplayFor(model => model.State)
+        </div>
+        <div class="editor-label" style="font-weight:bold;">
+            @Html.DisplayNameFor(model => model.Zipcode)
+        </div>
+        <div class="editor-field">
+            @Html.DisplayFor(model => model.Zipcode)
+        </div>
+        <div class="editor-label" style="font-weight:bold;">
+            @Html.DisplayNameFor(model => model.Locationlatitude)
+        </div>
+        <div class="editor-field">
+            @Html.DisplayFor(model => model.Locationlatitude)
+        </div>
+        <div class="editor-label" style="font-weight:bold;">
+            @Html.DisplayNameFor(model => model.Locationlongitude)
+        </div>
+        <div class="editor-field">
+            @Html.DisplayFor(model => model.Locationlongitude)
+        </div>
+        <div class="editor-label" style="font-weight:bold;">
+            @Html.DisplayNameFor(model => model.Isactive)
+        </div>
+        <div class="editor-field">
+            @Html.DisplayFor(model => model.Isactive)
+        </div>
+        <div class="editor-label" style="font-weight:bold;">
+            @Html.DisplayNameFor(model => model.Isdeleted)
+        </div>
+        <div class="editor-field">
+            @Html.DisplayFor(model => model.Isdeleted)
+        </div>
+        <div class="editor-label" style="font-weight:bold;">
+            @Html.DisplayNameFor(model => model.Createdon)
+        </div>
+        <div class="editor-field">
+            @Html.DisplayFor(model => model.Createdon)
+        </div>
+        <div class="editor-label" style="font-weight:bold;">
+            @Html.DisplayNameFor(model => model.Deletedon)
+        </div>
+        <div class="editor-field">
+            @Html.DisplayFor(model => model.Deletedon)
+        </div>
+
+
+        <div>@Html.ActionLink("Back to List", "Index", null, new { @class = "btn" })</div>
+
+    </div>
+}
+
+
+
+
+<style>
+    body {
+        background-color: #EDEDED;
+    }
+
+    .fls {
+        padding: 5px 20px;
+    }
+
+    .dfv {
+        padding: 5px 20px;
+    }
+</style>

@@ -1,0 +1,92 @@
+ @model IEnumerable<ChossonKallah.Models.LocationClass> 
+ 
+ 
+
+
+
+<script>
+		 $(document).ready(function () {
+			 var mydata = $('#RawDatas').parent('td').html();
+			 $('#RawDatas').parent().parent().parent().parent('table').replaceWith(mydata);
+		 
+			 $("#AddressBookToggleAll").change(function () {
+				 if ($(this).is(':checked')) {
+					 $("input.k-checkbox[type=checkbox]").each(function () {
+						 $(this).attr('checked', true);
+					 }); 
+				 } else {
+					 $("input.k-checkbox[type=checkbox]").each(function () {
+						  $(this).attr('checked', false);
+					 });
+				 }
+			 }); 
+		 }); 
+ </script>
+ 
+
+
+ 
+  
+
+
+ 
+		 <table class="table table-striped table-bordered bootstrap-datatable datatable dataTable" >
+			 <tr>
+				 <th>
+				 </th>
+				 <th >
+					 @Html.DisplayNameFor(model => model.Locationname)
+				 </th>
+				 <th >
+					 @Html.DisplayNameFor(model => model.Locationurl)
+				 </th>
+				 <th >
+					 @Html.DisplayNameFor(model => model.Isactive)
+				 </th>
+				 <th >
+					 @Html.DisplayNameFor(model => model.Isdeleted)
+				 </th>
+				 <th >
+					 @Html.DisplayNameFor(model => model.Createdon)
+				 </th>
+				 <th >
+					 @Html.DisplayNameFor(model => model.Deletedon)
+				 </th>
+				 <th>Action</th>
+			 </tr>
+		 @foreach (var item in Model) {
+			 <tr>
+				 <td>
+					 @Html.HiddenFor(model => item.Locationid)
+				 </td>
+				 <td >
+					 @Html.DisplayFor(model => item.Locationname)
+				 </td>
+				 <td >
+					 @Html.DisplayFor(model => item.Locationurl)
+				 </td>
+				 <td >
+					 @Html.DisplayFor(model => item.Isactive)
+				 </td>
+				 <td >
+					 @Html.DisplayFor(model => item.Isdeleted)
+				 </td>
+				 <td >
+					 @Html.DisplayFor(model => item.Createdon)
+				 </td>
+				 <td >
+					 @Html.DisplayFor(model => item.Deletedon)
+				 </td>
+				 <td><a class="btn btn-info" style="padding:2px 7px; margin:2px;" href="/Location/Edit?Locationid=@item.Locationid "><i class="halflings-icon white edit"></i></a>  
+				 <a class="btn btn-success" style="padding:2px 7px; margin:2px;" href="/Location/Details?Locationid=@item.Locationid "><i class="halflings-icon white zoom-in"></i></a>  
+				 <a class="btn btn-danger" style="padding:2px 7px; margin:2px;" href="/Location/Delete?Locationid=@item.Locationid" onclick="return confirm('Are you sure you want to delete this record.'); "><i class="halflings-icon white trash"></i></a> </td>
+			 </tr>
+		 }
+		 </table>
+		 
+	 
+
+
+ 
+
+   

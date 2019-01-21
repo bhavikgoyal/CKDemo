@@ -1,0 +1,197 @@
+@model IEnumerable<ChossonKallahAdmin.EF6.Location>
+@{
+    ViewBag.PageHead = "Locations";
+    Layout = "~/Views/Shared/HomeLayout.cshtml";
+    string LocationSuccess = Convert.ToString(TempData["LocationSuccess"]);
+}
+<script>
+    $(document).ready(function () {
+        $('#NewIndex').val(1);
+        $('#searchbox').val('');
+        bindPagingData();
+        $('#btnadd').on('click', function () {
+            window.location.href = '/Location/Create';
+        });
+        $(window).on('mousewheel DOMMouseScroll', function (e) {
+            var scroll = $(window).scrollTop();
+            var direction = (function () {
+                var delta = (e.type === 'DOMMouseScroll' ? e.originalEvent.detail * -40 : e.originalEvent.wheelDelta);
+                return delta > 0 ? 0 : 1;
+            }());
+            if (direction === 1) {
+                var maxVal = parseInt((parseInt($(document).height()) * 95) / 100);
+                var lowVal = $(window).scrollTop() + $(window).height();
+                if (lowVal >= maxVal) {
+                    if ($("#NewIndex").val() != "1") {
+                        $("#ddlload").hide();
+                        GetRecords();
+                    }
+                }
+            }
+        });
+    });
+    function bindPagingDataSearch() {
+        $('#NewIndex').val(1);
+        return bindPagingData();
+    }
+    function bindPagingData() {
+
+        $.ajax({
+            type: "Get",
+            cache: false,
+            url: "/Location/Indexpaging",
+            data: { 'PageIndex': $('#NewIndex').val(), 'PageSize': $('#Pagesize').val(), 'Search': $('#searchbox').val() },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                if (response.indexOf('Exception') >= 0) {
+                    $('.alert-danger').show();
+                    $('.errormessage').html(response);
+                }
+                else {
+                    response = JSON.parse(response);
+                    var curRecords = 0;
+                    var TotalRecs = 0;
+                    if (parseInt(response.length) > 0) {
+                        curRecords = parseInt(($('#NewIndex').val()) * parseInt($('#Pagesize').val()));
+                        curRecords = curRecords - ($('#Pagesize').val() - parseInt(response.length));
+                        TotalRecs = parseInt(response[0].TotalRecord);
+                        $('.spnOfRecs').text(curRecords);
+                        $('.spnTotalRecs').text(TotalRecs);
+                    }
+                    if (parseInt(response.length) > 0) {
+                        if (parseInt(($('#NewIndex').val()) * parseInt($('#Pagesize').val())) >= parseInt(response[0].TotalRecord)) {
+                            $("#ddlload").hide();
+                        } else {
+                            $("#ddlload").show();
+                        }
+                    } else {
+                        $("#ddlload").hide();
+                    }
+                    if ($('#NewIndex').val() < 2) {
+                        $("#RawDatas table tbody tr:not(:first)").remove();
+                    }
+                    $("#RawDatas table tbody tr:eq(0)").show();
+                    for (var i = 0; i < response.length; i++) {
+                        var table = $("#RawDatas table tbody tr:eq(0)").clone(true);
+                        $(".locationname", table).html(response[i].LocationName);
+                        $(".locationurl", table).html(response[i].LocationURL);
+                        $("#EditData", table).attr('href', '/Location/Edit?Locationid=' + response[i].LocationId);
+                        $('#DeleteData', table).attr('href', '/Location/Delete?Locationid=' + response[i].LocationId);
+                        if (response[i].IsActive) {
+                            $('#activetrue', table).show();
+                            $('#activefalse', table).hide();
+                        }
+                        else {
+                            $('#activetrue', table).hide();
+                            $('#activefalse', table).show();
+                        }
+                        $("#RawDatas table").append(table);
+                    }
+                    $("#RawDatas table tbody tr:eq(0)").hide();
+                    $('#success').hide();
+                    $('#error').hide();
+                }
+            },
+            failure: function (response) {
+
+            },
+            error: function (response) {
+            }
+        });
+        return false;
+    }
+    function Getdatas() {
+        GetRecords();
+    }
+    function GetRecords() {
+        var CountVal = (parseInt($('#NewIndex').val()) + 1);
+        $('#NewIndex').val(CountVal);
+        bindPagingData();
+    }
+</script>
+@{
+    if (!string.IsNullOrEmpty(LocationSuccess))
+    {
+        <div class="alert alert-success" style="margin-top:20px">
+            <strong>Success!</strong> <span class="successmessage">@LocationSuccess</span>
+        </div>
+    }
+        <div class="alert alert-danger" style="margin-top:20px;display:none">
+            <strong>Error!</strong> <span class="errormessage"></span>
+        </div>
+    <br />
+    <div class="box-content">
+        <div>
+            <div class="panel panel-default">
+                <div class="panel-heading">Locations</div>
+                <div class="panel-body">
+                    <div class="row clearfix">
+                        <form>
+                            <div class="form-group clearfix input-group col-lg-3 col-md-5 col-sm-7 pull-left p_l_15 p_r_15">
+                                <input type="text" id="searchbox" class="form-control" placeholder="Search" />
+                                <span class="input-group-btn">
+                                    <input type="submit" onclick="return bindPagingDataSearch()" value="Search" class="btn btn-primary" />
+                                </span>
+                            </div>
+                        </form>
+                        <div class="form-group clearfix col-lg-9 col-md-7 col-sm-5 ">
+                            <button type="button" id="btnadd" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Add</button>
+                        </div>
+                    </div>
+                    <div class="row clearfix p_l_15 p_r_15">
+                        <div class="pull-right">
+                            <label> <span class="spnOfRecs">0</span> out of <span class="spnTotalRecs">0</span>&nbsp; Records </label>
+                        </div>
+                        <div class="form-group  table-responsive" id="RawDatas">
+                            <table id="myTable" class="table table-striped table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:center;">
+                                            Location Name
+                                        </th>
+                                        <th style="text-align:center;">
+                                            Location URL
+                                        </th>
+                                        <th style="width:35px;text-align:center;">Status</th>
+                                        <th style="width:100px;text-align:center;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="display:none">
+                                            <span class="locationid"></span>
+                                        </td>
+                                        <td style="text-align:center;"><span class="locationname"></span> </td>
+                                        <td style="text-align:center;"><span class="locationurl"></span>  </td>
+                                        <td style="text-align:center">
+                                            <img src="~/Content/Images/icon_active.png" id="activetrue" style="max-width:none" />
+                                            <img src="~/Content/Images/icon_inactive.png" id="activefalse" style="max-width:none" />
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <a title="Edit" margin:2px;" id="EditData">
+                                                <img src="~/Content/Images/pencil.png" style="max-width:none;cursor:pointer;" />
+                                            </a>
+                                            <a title="Delete" id="DeleteData" onclick="return confirm('Are you sure you want to delete this record ?'); ">
+                                                <img src="~/Content/Images/cross.png" style="max-width:none;cursor:pointer;" />
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="pull-right" style="margin-top:5px">
+                            <label> <span class="spnOfRecs">0</span> out of <span class="spnTotalRecs">0</span>&nbsp; Records </label>
+
+                        </div>
+                        <div style="text-align:center;margin-top:5px" id="ddlload">
+                            <a class="btn btn-primary" style="cursor:pointer" id="loaddata" onclick="Getdatas();">Load more</a>
+                        </div>
+                        <input type="hidden" id="NewIndex" value="1" />
+                        <input type="hidden" id="Pagesize" value="10" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

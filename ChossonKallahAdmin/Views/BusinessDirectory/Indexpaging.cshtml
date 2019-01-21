@@ -1,0 +1,158 @@
+ @model IEnumerable<ChossonKallah.Models.BusinessDirectoryClass> 
+ 
+ 
+
+
+
+<script>
+		 $(document).ready(function () {
+			 var mydata = $('#RawDatas').parent('td').html();
+			 $('#RawDatas').parent().parent().parent().parent('table').replaceWith(mydata);
+		 
+			 $("#AddressBookToggleAll").change(function () {
+				 if ($(this).is(':checked')) {
+					 $("input.k-checkbox[type=checkbox]").each(function () {
+						 $(this).attr('checked', true);
+					 }); 
+				 } else {
+					 $("input.k-checkbox[type=checkbox]").each(function () {
+						  $(this).attr('checked', false);
+					 });
+				 }
+			 }); 
+		 }); 
+ </script>
+ 
+
+
+ 
+  
+
+
+ 
+		 <table class="table table-striped table-bordered bootstrap-datatable datatable dataTable" >
+			 <tr>
+				 <th>
+				 </th>
+				 <th >
+					 @Html.DisplayNameFor(model => model.Businessname)
+				 </th>
+				 <th >
+					 @Html.DisplayNameFor(model => model.Website)
+				 </th>
+				 <th >
+					 @Html.DisplayNameFor(model => model.Businessurl)
+				 </th>
+				 <th >
+					 @Html.DisplayNameFor(model => model.Phonenumber)
+				 </th>
+				 <th >
+					 @Html.DisplayNameFor(model => model.Businessimage)
+				 </th>
+				 <th >
+					 @Html.DisplayNameFor(model => model.Locationid)
+				 </th>
+				 <th >
+					 @Html.DisplayNameFor(model => model.Address)
+				 </th>
+				 <th >
+					 @Html.DisplayNameFor(model => model.Addressline2)
+				 </th>
+				 <th >
+					 @Html.DisplayNameFor(model => model.City)
+				 </th>
+				 <th >
+					 @Html.DisplayNameFor(model => model.State)
+				 </th>
+				 <th >
+					 @Html.DisplayNameFor(model => model.Zipcode)
+				 </th>
+				 <th >
+					 @Html.DisplayNameFor(model => model.Locationlatitude)
+				 </th>
+				 <th >
+					 @Html.DisplayNameFor(model => model.Locationlongitude)
+				 </th>
+				 <th >
+					 @Html.DisplayNameFor(model => model.Isactive)
+				 </th>
+				 <th >
+					 @Html.DisplayNameFor(model => model.Isdeleted)
+				 </th>
+				 <th >
+					 @Html.DisplayNameFor(model => model.Createdon)
+				 </th>
+				 <th >
+					 @Html.DisplayNameFor(model => model.Deletedon)
+				 </th>
+				 <th>Action</th>
+			 </tr>
+		 @foreach (var item in Model) {
+			 <tr>
+				 <td>
+					 @Html.HiddenFor(model => item.Businessid)
+				 </td>
+				 <td >
+					 @Html.DisplayFor(model => item.Businessname)
+				 </td>
+				 <td >
+					 @Html.DisplayFor(model => item.Website)
+				 </td>
+				 <td >
+					 @Html.DisplayFor(model => item.Businessurl)
+				 </td>
+				 <td >
+					 @Html.DisplayFor(model => item.Phonenumber)
+				 </td>
+				 <td >
+					 @Html.DisplayFor(model => item.Businessimage)
+				 </td>
+				 <td >
+					 @Html.DisplayFor(model => item.Locationid)
+				 </td>
+				 <td >
+					 @Html.DisplayFor(model => item.Address)
+				 </td>
+				 <td >
+					 @Html.DisplayFor(model => item.Addressline2)
+				 </td>
+				 <td >
+					 @Html.DisplayFor(model => item.City)
+				 </td>
+				 <td >
+					 @Html.DisplayFor(model => item.State)
+				 </td>
+				 <td >
+					 @Html.DisplayFor(model => item.Zipcode)
+				 </td>
+				 <td >
+					 @Html.DisplayFor(model => item.Locationlatitude)
+				 </td>
+				 <td >
+					 @Html.DisplayFor(model => item.Locationlongitude)
+				 </td>
+				 <td >
+					 @Html.DisplayFor(model => item.Isactive)
+				 </td>
+				 <td >
+					 @Html.DisplayFor(model => item.Isdeleted)
+				 </td>
+				 <td >
+					 @Html.DisplayFor(model => item.Createdon)
+				 </td>
+				 <td >
+					 @Html.DisplayFor(model => item.Deletedon)
+				 </td>
+				 <td><a class="btn btn-info" style="padding:2px 7px; margin:2px;" href="/BusinessDirectory/Edit?Businessid=@item.Businessid "><i class="halflings-icon white edit"></i></a>  
+				 <a class="btn btn-success" style="padding:2px 7px; margin:2px;" href="/BusinessDirectory/Details?Businessid=@item.Businessid "><i class="halflings-icon white zoom-in"></i></a>  
+				 <a class="btn btn-danger" style="padding:2px 7px; margin:2px;" href="/BusinessDirectory/Delete?Businessid=@item.Businessid" onclick="return confirm('Are you sure you want to delete this record.'); "><i class="halflings-icon white trash"></i></a> </td>
+			 </tr>
+		 }
+		 </table>
+		 
+	 
+
+
+ 
+
+   

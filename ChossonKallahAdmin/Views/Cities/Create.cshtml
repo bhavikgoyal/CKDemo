@@ -1,0 +1,102 @@
+@model ChossonKallah.Models.CitiesClass
+
+
+
+
+
+
+
+
+@{
+    Layout = "~/Views/Shared/HomeLayout.cshtml";
+}
+<script src="~/Scripts/jquery1.8.3.min.js"></script>
+<script src="~/Scripts/jquery-1.js"></script>
+<script>
+
+    $(document).ready(function () {
+        $('div.header-nav').css('display', 'none');
+    });
+
+</script>@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="box-header" data-original-title>
+        <h2><i class="halflings-icon white user"></i><span class="break"></span>Add Record</h2>
+        <div class="box-icon">
+        </div>
+    </div>
+    <div class="box-content">
+
+        <div class="editor-field">
+            @Html.HiddenFor(model => model.Cityid)
+        </div>
+        <div class="editor-label" style="font-weight:bold;">
+            @Html.LabelFor(model => model.Cityname)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Cityname)
+            @Html.ValidationMessageFor(model => model.Cityname)
+        </div>
+        <div class="editor-label" style="font-weight:bold;">
+            @Html.LabelFor(model => model.Stateid)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Stateid)
+            @Html.ValidationMessageFor(model => model.Stateid)
+        </div>
+        <div class="editor-label" style="font-weight:bold;">
+            @Html.LabelFor(model => model.Isactive)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Isactive)
+            @Html.ValidationMessageFor(model => model.Isactive)
+        </div>
+        <div class="editor-label" style="font-weight:bold;">
+            @Html.LabelFor(model => model.Isdeleted)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Isdeleted)
+            @Html.ValidationMessageFor(model => model.Isdeleted)
+        </div>
+        <div class="editor-label" style="font-weight:bold;">
+            @Html.LabelFor(model => model.Createdon)
+        </div>
+        <div class="editor-field">
+            @Html.TextBoxFor(model => model.Createdon, null, new { @class = "focused datepicker" })
+            @Html.ValidationMessageFor(model => model.Createdon)
+        </div>
+        <div class="editor-label" style="font-weight:bold;">
+            @Html.LabelFor(model => model.Deletedon)
+        </div>
+        <div class="editor-field">
+            @Html.TextBoxFor(model => model.Deletedon, null, new { @class = "focused datepicker" })
+            @Html.ValidationMessageFor(model => model.Deletedon)
+        </div>
+
+        <div>
+            <input type="submit" class="btn btn-primary" value="Save" />
+
+            @Html.ActionLink("Back to List", "Index", null, new { @class = "btn " })
+        </div>
+
+    </div>
+}
+
+
+
+
+<style>
+    body {
+        background-color: #EDEDED;
+    }
+
+    .fls {
+        padding: 5px 20px;
+    }
+
+    .dfv {
+        padding: 5px 20px;
+    }
+</style>

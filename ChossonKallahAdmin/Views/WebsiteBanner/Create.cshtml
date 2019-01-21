@@ -1,0 +1,113 @@
+@model ChossonKallahAdmin.EF6.WebsiteBanner
+@{
+    ViewBag.PageHead = "Add Banner";
+    Layout = "~/Views/Shared/HomeLayout.cshtml";
+}
+<script>
+
+    $(document).ready(function () {
+        $('div.header-nav').css('display', 'none');
+        //$("#Sequence").attr("disabled", "disabled");
+    });
+
+</script>
+@using (Html.BeginForm("Create", "WebsiteBanner", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="alert alert-success" id="success" style="margin-top:20px;display:none">
+        <strong>Success!</strong> <span class="successmessage"></span>
+    </div>
+    <div class="alert alert-danger" id="error" style="margin-top:20px;display:none">
+        <strong>Error!</strong> <span class="errormessage"></span>
+    </div>
+    <br />
+    <div class="panel panel-default">
+        <div class="panel-heading">Add Banner</div>
+        <div class="panel-body">
+            <div class="row clearfix">
+                <div class="form-group">
+                    @Html.HiddenFor(model => model.WebsiteBannerID)
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Banner Name&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.BannerName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.BannerName, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Banner Image&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.BannerImage, new { @class = "form-control", @type = "file" })
+                        @Html.ValidationMessageFor(model => model.BannerImage, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Text Line 1&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.BannerTextLine1, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.BannerTextLine1, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Text Line 2&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.BannerTextLine2, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.BannerTextLine2, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Is Active</label>
+                        @Html.EditorFor(model => model.IsActive, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    <input type="submit" onclick="return chckvalidation()" class="btn  btn-primary pull-left" style="margin-right:12px;" value="Save" />
+                    @Html.ActionLink("Cancel", "Index", null, new { @class = "btn  btn-primary pull-left", @style = "margin-right:12px;" })
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<script>
+    function chckvalidation() {
+        $('#error1').hide();
+        debugger;
+        var IsError = true;
+        var errormessage = "";
+        $('.errormessage').html(errormessage);
+
+        if ($('#BannerName').val() == "") {
+            $('.errormessage').html(errormessage + '<br/> - Banner name is required.');
+            errormessage = $('.errormessage').html();
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            IsError = false;
+            $('#error').show();
+        }
+        if ($('#BannerImage').val() == "") {
+            $('.errormessage').html(errormessage + '<br/> - Banner image is required.');
+            errormessage = $('.errormessage').html();
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            IsError = false;
+            $('#error').show();
+        }
+        if ($('#BannerTextLine1').val() == "") {
+            $('.errormessage').html(errormessage + "<br/> - Banner text line 1 is required.");
+            errormessage = $('.errormessage').html();
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            IsError = false;
+            $('#error').show();
+        }
+
+        if ($('#BannerTextLine2').val() == "") {
+            $('.errormessage').html(errormessage + "<br/> - Banner text line 2 is required.");
+            errormessage = $('.errormessage').html();
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            IsError = false;
+            $('#error').show();
+        }
+        return IsError;
+    }
+</script>

@@ -1,0 +1,243 @@
+@model IEnumerable<ChossonKallahAdmin.EF6.AdsBanner>
+@{
+    ViewBag.PageHead = "Third-Party Banners";
+    Layout = "~/Areas/Xpanel/Views/Shared/HomeLayout.cshtml";
+
+    string AdsBannerSuccess = Convert.ToString(TempData["AdsBannerSuccess"]);
+    string AdsBannerError = Convert.ToString(TempData["AdsBannerError"]);
+
+}
+<script>
+    $(document).ready(function () {
+        $('#NewIndex').val(1);
+        $('#searchbox').val('');
+        bindPagingData();
+        $('#btnadd').on('click', function () {
+            window.location.href = '/Xpanel/AdsBanner/Create';
+        });
+        $(window).on('mousewheel DOMMouseScroll', function (e) {
+            var scroll = $(window).scrollTop();
+            var direction = (function () {
+                var delta = (e.type === 'DOMMouseScroll' ? e.originalEvent.detail * -40 : e.originalEvent.wheelDelta);
+                return delta > 0 ? 0 : 1;
+            }());
+            if (direction === 1) {
+                var maxVal = parseInt((parseInt($(document).height()) * 95) / 100);
+                var lowVal = $(window).scrollTop() + $(window).height();
+                if (lowVal >= maxVal) {
+                    if ($("#NewIndex").val() != "1") {
+                        $("#ddlload").hide();
+                        GetRecords();
+                    }
+                }
+            }
+        });
+    });
+
+    function bindPagingDataSearch() {
+        $('#NewIndex').val(1);
+        return bindPagingData();
+    }
+
+    function bindPagingData() {
+
+        $.ajax({
+            type: "Get",
+            cache: false,
+            url: "/Xpanel/AdsBanner/Indexpaging",
+            data: { 'PageIndex': $('#NewIndex').val(), 'PageSize': $('#Pagesize').val(), 'Search': $('#searchbox').val() },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                debugger;
+                if (response.indexOf('Exception') >= 0) {
+                    $('.alert-danger').show();
+                    $('.errormessage').html(response);
+                }
+                else {
+                    response = JSON.parse(response);
+                    var curRecords = 0;
+                    var TotalRecs = 0;
+                    if (parseInt(response.length) > 0) {
+                        curRecords = parseInt(($('#NewIndex').val()) * parseInt($('#Pagesize').val()));
+                        curRecords = curRecords - ($('#Pagesize').val() - parseInt(response.length));
+                        TotalRecs = parseInt(response[0].TotalRecord);
+                        $('.spnOfRecs').text(curRecords);
+                        $('.spnTotalRecs').text(TotalRecs);
+                    }
+                    if (parseInt(response.length) > 0) {
+                        if (parseInt(($('#NewIndex').val()) * parseInt($('#Pagesize').val())) >= parseInt(response[0].TotalRecord)) {
+                            $("#ddlload").hide();
+                        } else {
+                            $("#ddlload").show();
+                        }
+                    } else {
+                        $("#ddlload").hide();
+                    }
+                    if ($('#NewIndex').val() < 2) {
+                        $("#RawDatas table tbody tr:not(:first)").remove();
+                    }
+                    $("#RawDatas table tbody tr:eq(0)").show();
+                    for (var i = 0; i < response.length; i++) {
+                        var table = $("#RawDatas table tbody tr:eq(0)").clone(true);
+                        $(".adsbannername", table).html(response[i].AdsBannerName);
+                        $(".adsbannerimage", table).html(response[i].AdsBannerImage);
+                        $(".adsbannerposition", table).html(response[i].AdsBannerPosition);
+                        $(".vendorname", table).html(response[i].VendorName);
+                        $(".startdate", table).html(response[i].StartDate);
+                        $(".enddate", table).html(response[i].EndDate);
+                        $(".priority", table).html(response[i].Priority);
+                        //$(".vendoremail", table).html(response[i].VendorEmail);
+                        $("#EditData", table).attr('href', '/Xpanel/AdsBanner/Edit?AdsBannerid=' + response[i].AdsBannerID);
+                        $('#DeleteData', table).attr('href', '/Xpanel/AdsBanner/Delete?AdsBannerid=' + response[i].AdsBannerID);
+                        if (response[i].IsActive) {
+                            $('#activetrue', table).show();
+                            $('#activefalse', table).hide();
+                        }
+                        else {
+                            $('#activetrue', table).hide();
+                            $('#activefalse', table).show();
+                        }
+                        $("#RawDatas table").append(table);
+                    }
+                    $("#RawDatas table tbody tr:eq(0)").hide();
+                    $('#success').hide();
+                    $('#error').hide();
+                }
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+            }
+        });
+        return false;
+    }
+
+    function Getdatas() {
+        GetRecords();
+    }
+
+    function GetRecords() {
+        var CountVal = (parseInt($('#NewIndex').val()) + 1);
+        $('#NewIndex').val(CountVal);
+        bindPagingData();
+    }
+
+</script>
+
+
+
+@{
+    //Message Display
+    if (!string.IsNullOrEmpty(AdsBannerSuccess))
+    {
+        <div class="alert alert-success" style="margin-top:20px">
+            <strong>Success!</strong> <span class="successmessage">@AdsBannerSuccess</span>
+        </div>
+    }
+    if (!string.IsNullOrEmpty(AdsBannerError))
+    {
+        <div class="alert alert-danger" style="margin-top:20px">
+            <strong>Error!</strong> <span class="successmessage">@AdsBannerError</span>
+        </div>
+    }
+    <div class="alert alert-danger" style="margin-top:20px;display:none">
+        <strong>Error!</strong> <span class="errormessage"></span>
+    </div>
+    <br />
+    <div class="box-content">
+        <div>
+            <div class="panel panel-default">
+                <div class="panel-heading">Third-Party Banners</div>
+                <div class="panel-body">
+                    <div class="row clearfix">
+                        <form>
+                            <div class="form-group clearfix input-group col-lg-3 col-md-5 col-sm-7 pull-left p_l_15 p_r_15">
+                                <input type="text" id="searchbox" class="form-control" placeholder="Search" />
+                                <span class="input-group-btn">
+                                    <input type="submit" value="Search" onclick="return bindPagingDataSearch();" class="btn btn-primary" />
+                                </span>
+                            </div>
+                        </form>
+                        <div class="form-group clearfix col-lg-9 col-md-7 col-sm-5 ">
+                            <button type="button" id="btnadd" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Add</button>
+                        </div>
+                    </div>
+                    <div class="row clearfix p_l_15 p_r_15">
+                        <div class="form-group  table-responsive" id="RawDatas">
+                            <div class="pull-right">
+                                <label> <span class="spnOfRecs">0</span> out of <span class="spnTotalRecs">0</span>&nbsp; Records </label>
+                            </div>
+                            <table id="myTable" class="table table-striped table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:center;">
+                                            Name
+                                        </th>
+                                        <th style="text-align:center;">Image</th>
+                                        <th style="text-align:center;">Position</th>
+                                        <th style="text-align:center;">Vendor Name</th>
+                                        <th style="text-align:center;">Start Date</th>
+                                        <th style="text-align:center;">End Date</th>
+                                        <th style="text-align:center;">Priority</th>
+                                        <th style="width:35px;text-align:center;">Status</th>
+                                        <th style="width:100px;text-align:center;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="display:none">
+                                            <span class="adsbannerid"></span>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <span class="adsbannername"></span>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <span class="adsbannerimage"></span>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <span class="adsbannerposition"></span>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <span class="vendorname"></span>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <span class="startdate"></span>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <span class="enddate"></span>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <span class="priority"></span>
+                                        </td>
+                                        <td style="text-align:center">
+                                            <img src="~/Content/Images/icon_active.png" id="activetrue" style="max-width:none" />
+                                            <img src="~/Content/Images/icon_inactive.png" id="activefalse" style="max-width:none" />
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <a title="Edit" margin:2px;" id="EditData">
+                                                <img src="~/Content/Images/pencil.png" style="max-width:none;cursor:pointer;" />
+                                            </a>
+                                            <a title="Delete" id="DeleteData" onclick="return confirm('Are you sure you want to delete this record ?'); ">
+                                                <img src="~/Content/Images/cross.png" style="max-width:none;cursor:pointer;" />
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="pull-right" style="margin-top:5px">
+                                <label> <span class="spnOfRecs">0</span> out of <span class="spnTotalRecs">0</span>&nbsp; Records </label>
+
+                            </div>
+                            <div style="text-align:center;margin-top:5px" id="ddlload">
+                                <a class="btn btn-primary" style="cursor:pointer" id="loaddata" onclick="Getdatas();">Load more</a>
+                            </div>
+                            <input type="hidden" id="NewIndex" value="1" />
+                            <input type="hidden" id="Pagesize" value="10" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

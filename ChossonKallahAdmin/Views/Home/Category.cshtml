@@ -1,0 +1,176 @@
+﻿@using System.Web.Configuration
+@{
+    ViewBag.Title = "Category";
+    Layout = "~/Views/Shared/HomeLayout.cshtml";
+}
+
+
+<div class='row main' id="cat-page">
+    <div class='wrap'>
+        <div id='banner-cat' class='col-12'>
+            <div class='title'>
+                Congregation<br />Shaare<br />Zion
+                <p>Brooklyn, NY</p>
+            </div>
+        </div>
+        <div class='col-sm-4 col-xs-12 menu-full'>
+            <h3>Select a Category</h3>
+            <form class='search'>
+                <input type="text" name="search" placeholder="" class='search-box'>
+            </form>
+            <ul id="uldata">
+                <li>
+                    <span class="CategoryId" style="display:none"></span>
+                    <a class="CategoryUrl">
+                        <span class="CategoryName"></span>
+                    </a>
+                    <ul id="subuldata">
+                        <li>
+                            <span class="SubCategoryId" style="display:none"></span>
+                            <a class="SubCategoryUrl">
+                                <span class="SubCategoryName"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div id="mainlistings">
+            <div class='col-sm-8 col-xs-12' id="vendors">
+                <h1 id="CategoryName" class='page-title'>PHOTOGRAPHERS</h1>
+                <ul id="listingul" class="main-vendors">
+                    <li>
+                        <div class="col-sm-4 col-md-3" style="padding:0;">
+                            <a class='thumb'>
+                                <img class="listingimage" />
+                            </a>
+                        </div>
+                        <div class='info  col-md-9 col-sm-8'>
+                            <h4 id="listingname"></h4>
+                            <span class='location' id="listingurl"></span> |
+                            <a id="phoneatag"> <span class="phonenumber"></span></a> | <a id="websiteatag" target="_blank"><span class="website"></span></a>
+                            <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes</p>
+                            <ul id="listinggalleryul" class='thumbs-mini'>
+                                <a><li><img class="gallerimages" /></li></a>
+                            </ul>
+                            <div class='save'><a href="">Save</a></div>
+                            <div style="clear:both"></div>
+                        </div>
+                    </li>
+                </ul>
+                <h5>Text Listings</h5>
+                <ul class="text-vendors">
+                    <li class='col-sm-4 col-xs-6'><h5>ABC Company</h5>1000 60th Avenue<br />Brooklyn<br />718-023-1234</li>
+                    <li class='col-sm-4 col-xs-6'><h5>ABC Company</h5>1000 60th Avenue<br />Brooklyn<br />718-023-1234</li>
+                    <li class='col-sm-4 col-xs-6'><h5>ABC Company</h5>1000 60th Avenue<br />Brooklyn<br />718-023-1234</li>
+                    <li class='col-sm-4 col-xs-6'><h5>ABC Company</h5>1000 60th Avenue<br />Brooklyn<br />718-023-1234</li>
+                    <li class='col-sm-4 col-xs-6'><h5>ABC Company</h5>1000 60th Avenue<br />Brooklyn<br />718-023-1234</li>
+                    <li class='col-sm-4 col-xs-6'><h5>ABC Company</h5>1000 60th Avenue<br />Brooklyn<br />718-023-1234</li>
+                    <div style="clear:both"></div>
+                </ul>
+            </div>
+        </div>
+        <div style="clear:both"></div>
+    </div>
+</div>
+
+<script>
+    function GetCategories() {
+        $.ajax({
+            type: "Get",
+            cache: false,
+            url: "/Home/GetCategories",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                debugger;
+                response = JSON.parse(response);
+                for (var i = 0; i < response.length; i++) {
+                    var table = $("#uldata li:eq(0)").clone(true);
+                    if (response[i].childCat.length == 0) {
+                        $(".CategoryName", table).html(response[i].CategoryName);
+                        $(".CategoryId", table).html(response[i].CategoryId);
+                        $(".CategoryUrl", table).attr('href', '#');
+                        $(".CategoryUrl", table).attr('onclick', 'return  GetListingDataByCategory("' + response[i].CategoryId + '","' + response[i].CategoryName + '")');
+                        $("#subuldata", table).hide();
+                    }
+                    else {
+                        for (var j = 0; j < response[i].childCat.length; j++) {
+                            $(".CategoryName", table).html(response[i].CategoryName);
+                            $(".CategoryId", table).html(response[i].CategoryId);
+                            var subtable = $("#subuldata li:eq(0)").clone(true);
+                            $("#subuldata", subtable).show();
+                            $(".SubCategoryName", subtable).html(response[i].childCat[j].CategoryName);
+                            $(".SubCategoryId", subtable).html(response[i].childCat[j].CategoryId);
+                            $(".SubCategoryUrl", table).attr('href', '#');
+                            $(".SubCategoryUrl", table).attr('onclick', 'return  GetListingDataByCategory("' + response[i].CategoryId + '","' + response[i].CategoryName + '")');
+                            $("#subuldata", table).append(subtable);
+                        }
+                        $("#subuldata li:eq(0)", table).hide();
+                    }
+                    $("#uldata").append(table);
+                }
+                $("#uldata li:eq(0)").hide();
+            },
+            failure: function (response) {
+
+            },
+            error: function (response) {
+            }
+        });
+    }
+    function GetListingDataByCategory(CategoryId,Categoryname) {
+        $.ajax({
+            type: "Get",
+            cache: false,
+            url: '/Home/GetListingDataByCategory?CategoryId=' + CategoryId,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                debugger;
+                response = JSON.parse(response);
+                if (response.length > 0) {
+                    $("#vendors").show();
+                    $("#CategoryName").html(Categoryname);
+                    $("#listingul li:not(:first)").remove();
+                    for (var i = 0; i < response.length; i++) {
+                        var table = $("#listingul li:eq(0)").clone(true);
+                        $(table).show();
+                        $(".listingimage", table).attr('src', "@WebConfigurationManager.AppSettings["BusinessImageURL"]" + response[i].BusinessName + "/" + response[i].BusinessImage);
+                        $("#listingname", table).html(response[i].BusinessName);
+                        $("#listingurl", table).html(response[i].BusinessURL);
+                        $(".phonenumber", table).html(response[i].PhoneNumber);
+                        $(".website", table).html(response[i].Website);
+                        $("#phoneatag", table).attr('href', 'tel:' + response[i].PhoneNumber);
+                        $("#websiteatag", table).attr('href', response[i].Website);
+                        if (response[i].Gallery.length != 0) {
+                            for (var j = 0; j < response[i].Gallery.length; j++) {
+                                var Gallery = $("#listinggalleryul li:eq(0)").clone(true);
+                                $(".gallerimages", Gallery).attr('src', "@WebConfigurationManager.AppSettings["ListingGalleryAddEdit"]" + response[i].BusinessName + "/" + response[i].Gallery[j].ImageName);
+                                $("#listinggalleryul", table).append(Gallery);
+                                $(Gallery).show();
+                            }
+                            $("#listinggalleryul li:eq(0)", table).hide();
+                        }
+                        $("#listingul").append(table);
+                    }
+                    $("#listingul li:eq(0)").hide();
+                }
+                else {
+                    $("#vendors").hide();
+                }
+            },
+            failure: function (response) {
+
+            },
+            error: function (response) {
+            }
+        });
+        return false;
+    }
+    $(document).ready(function () {
+        $("#vendors").hide();
+        GetCategories();
+    });
+</script>

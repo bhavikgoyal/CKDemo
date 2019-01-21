@@ -1,0 +1,117 @@
+﻿<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.PageHead</title>
+    <link href="~/Content/font-awesome-4.6.3/css/font-awesome.css" rel="stylesheet" />
+    <link href="~/Content/css/simple-line-icons.css" rel="stylesheet" />
+    <link href="~/Content/css/bootstrap.css" rel="stylesheet" />
+    <link href="~/Content/css/sidebar-menu.css" rel="stylesheet" />
+    <link href="~/Content/css/bootstrap-table.css" rel="stylesheet" media="all" />
+    <link href="~/Content/css/fileinput.css" rel="stylesheet" media="all" />
+    <link href="~/Content/css/chosen.css" rel="stylesheet" />
+    <link href="~/Content/css/select2.min.css" rel="stylesheet" />
+    <link href="~/Content/css/styles.css" rel="stylesheet" media="all">
+    <link href="~/Content/css/loader.css" rel="stylesheet" />
+    <link href="~/Content/css/daterangepicker.css" rel="stylesheet" />
+    <link href="~/Content/css/mystyle.css" rel="stylesheet" />
+    <script src="~/Content/js/jquery-2.2.4.min.js"></script>
+</head>
+
+<body style="position:relative;">
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-toggle" id="ToggleSideMenu" style="text-decoration:none !important;">☰</a>
+                <a class="navbar-brand" href="~/Demo/DashBoard"><span>Chosson</span> Kallah</a>
+                <ul class="user-menu">
+                    <li class="dropdown pull-right">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><svg class="glyph stroked male-user"><use xlink:href="#stroked-male-user"></use></svg><label style="cursor:pointer;">Test Admin</label><span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#"><svg class="glyph stroked male-user"><use xlink:href="#stroked-male-user"></use></svg>Profile</a></li>
+                            <li><a href="#"><svg class="glyph stroked gear"><use xlink:href="#stroked-gear"></use></svg>Change Password</a></li>
+                            <li><a href="#"><svg class="glyph stroked cancel"><use xlink:href="#stroked-cancel"></use></svg>Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-2 col-md-3 col-sm-3 sidebarparent clearfix">
+                <section class="sidebar">
+                    <ul class="sidebar-menu" id="Menu">
+                        <li>
+                            <a href="~/Demo/AdminIndex"><span class="icon-speedometer" style="margin-right:5px;" aria-hidden="true"></span>Admin</a>
+                        </li>
+                        <li>
+                            <a href="~/Demo/LocationIndex"><span class="icon-speedometer" style="margin-right:5px;" aria-hidden="true"></span>Location</a>
+                        </li>
+                        <li>
+                            <a href="~/Demo/CategoryIndex"><span class="icon-speedometer" style="margin-right:5px;" aria-hidden="true"></span>Categories</a>
+                        </li>
+                        <li>
+                            <a href="~/Demo/BusinessDirectoryIndex"><span class="icon-speedometer" style="margin-right:5px;" aria-hidden="true"></span>BusinessDirectory</a>
+                        </li>
+                    </ul>
+                </section>
+            </div>
+            <div class="col-sm-9 col-md-12 col-lg-10 main">
+                <br />
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <script src="~/Content/js/bootstrap.min.js"></script>
+    <script src="~/Content/js/chosen.jquery.js"></script>
+    <script src="~/Content/js/select2.min.js"></script>
+    <script src="~/Content/js/jquery.tagsinput/src/jquery.tagsinput.js"></script>
+    <script src="~/Content/js/sidebar-menu.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            $.sidebarMenu($('.sidebar-menu'));
+
+            for (var i = 0; i < parseInt($('#Menu li').length); i++) {
+                if (window.location.pathname == $('#Menu li:eq(' + i + ')').children('a').attr('href')) {
+                    $('#Menu li:eq(' + i + ')').addClass('active');
+                } else {
+                    $('#Menu li:eq(' + i + ')').removeClass('active');
+                }
+                for (var j = 0; j < parseInt($('#Menu li:eq(' + i + ') ul li').length); j++) {
+                    var liveUrl = window.location.pathname;
+                    var curUrl = $('#Menu li:eq(' + i + ') ul li:eq(' + j + ') a').attr('href');
+                    if (liveUrl == curUrl) {
+                        $('#Menu li:eq(' + i + ') ul ').css('display', 'block');
+                        $('#Menu li:eq(' + i + ') ul li:eq(' + j + ') a').addClass('active');
+                    }
+                }
+            }
+            $('.children li').removeClass('active');
+        });
+        $(".parent a").click(function (evt) {
+            var id = $(this).attr('href');
+            console.log(id);
+            if ($(id + ':visible').length == 0) {
+                $(id).css('display', 'block');
+            }
+            else {
+                $(id).css('display', 'none');
+            }
+        });
+        $("#ToggleSideMenu").click(function (e) {
+
+            e.preventDefault();
+            $(".sidebar").toggleClass("toggled");
+        });
+        $(window).on('beforeunload', function () {
+            $('.sidebar').addClass("toggled");
+        });
+    </script>
+
+</body>
+
+</html>

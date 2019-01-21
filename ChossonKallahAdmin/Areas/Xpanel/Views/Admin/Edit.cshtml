@@ -1,0 +1,167 @@
+@model ChossonKallahAdmin.EF6.Admin
+
+@{
+    ViewBag.PageHead = "Edit Admin";
+    Layout = "~/Areas/Xpanel/Views/Shared/HomeLayout.cshtml";
+}
+
+<script>
+
+    $(document).ready(function () {
+        $('div.header-nav').css('display', 'none');
+        $('#Password').val('@Model.Password');
+        $('#ConfirmPassword').val('@Model.Password');
+    });
+
+</script>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="alert alert-success" id="success" style="margin-top:20px;display:none">
+        <strong>Success!</strong> <span class="successmessage"></span>
+    </div>
+    <div class="alert alert-danger" id="error" style="margin-top:20px;display:none">
+        <strong>Error!</strong> <span class="errormessage"></span>
+    </div>
+    if (!string.IsNullOrEmpty(Convert.ToString(ViewBag.AdminExists)))
+    {
+        <div class="alert alert-danger" id="error1" style="margin-top:20px">
+            <strong>Error!</strong> <span class="errormessage">@Convert.ToString(ViewBag.AdminExists)</span>
+        </div>
+    }
+    <br />
+    <div class="panel panel-default">
+        <div class="panel-heading">Edit Admin</div>
+        <div class="panel-body">
+            <div class="row clearfix">
+                <div class="form-group">
+                    @Html.HiddenFor(model => model.AdminId)
+                    @Html.HiddenFor(model => model.CreatedOn)
+                    @Html.HiddenFor(model => model.DeletedOn)
+                    @Html.HiddenFor(model => model.IsDeleted)
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">@Html.LabelFor(model => model.Name)&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Name, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">@Html.LabelFor(model => model.Username)&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.Username, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Username, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">@Html.LabelFor(model => model.Email)&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Email, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">@Html.LabelFor(model => model.Password)&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Password, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">@Html.Label("ConfirmPassword", "Confirm Password")&nbsp; <label style="color:red;margin-bottom:0px;">*</label></label>
+                        @Html.Password("ConfirmPassword", "", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Password, "", new { @style = "color:red;margin-bottom:0px;font-size: 11px" })
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 form-group ">
+                        <label class="control-label">Is Active</label>
+                        @Html.EditorFor(model => model.IsActive, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    <input type="submit" onclick="return chckvalidation()" class="btn  btn-primary pull-left" style="margin-right:12px;" value="Update" />
+                    @Html.ActionLink("Cancel", "Index", null, new { @class = "btn  btn-primary pull-left", @style = "margin-right:12px;" })
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script src="~/Content/js/EmailValidation.js"></script>
+<script>
+    function chckvalidation() {
+        debugger;
+        var IsError = true;
+        var errormessage = "";
+        $('.errormessage').html(errormessage);
+        if ($('#Name').val() == "") {
+            $('.errormessage').html('<br/> - Name is required.');
+            errormessage = $('.errormessage').html();
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            IsError = false;
+            $('#error').show();        }
+        if ($('#Email').val() == "") {
+            $('.errormessage').html(errormessage + "<br/> - Email is required.");
+            errormessage = $('.errormessage').html();
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            IsError = false;
+            $('#error').show();        }
+        else {
+            //IsError = IsEmail($('#Email').val());
+            if (IsEmail($('#Email').val())) {
+
+            } else {
+                $('.errormessage').html(errormessage + "<br/> - Enter valid email.");
+                errormessage = $('.errormessage').html();
+                $("html, body").animate({ scrollTop: 0 }, "slow");
+                IsError = false;
+                $('#error').show();
+            }
+        }
+        if ($('#Username').val() == "") {
+            $('.errormessage').html(errormessage + "<br/> - Username is required.");
+            errormessage = $('.errormessage').html();
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            IsError = false;
+            $('#error').show();
+        }
+        if ($('#Password').val() == "") {
+            $('.errormessage').html(errormessage + "<br/> - Password is required.");
+            errormessage = $('.errormessage').html();
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            IsError = false;
+            $('#error').show();
+        }
+        if ($('#ConfirmPassword').val() == "") {
+            $('.errormessage').html(errormessage + "<br/> - Confirm password is required.");
+            errormessage = $('.errormessage').html();
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            IsError = false;
+            $('#error').show();
+        }
+        if ($('#Password').val() != "") {
+            if ($('#ConfirmPassword').val() != $('#Password').val()) {
+                $('.errormessage').html(errormessage + "<br/> - Confirm password does not match.");
+                errormessage = $('.errormessage').html();
+                $("html, body").animate({ scrollTop: 0 }, "slow");
+                IsError = false;
+                $('#error').show();
+            }
+        }
+
+        return IsError;
+    }
+</script>
+
+<style>
+    body {
+        background-color: #EDEDED;
+    }
+
+    .fls {
+        padding: 5px 20px;
+    }
+
+    .dfv {
+        padding: 5px 20px;
+    }
+</style>
